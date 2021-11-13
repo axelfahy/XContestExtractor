@@ -1,0 +1,47 @@
+version: '3'
+
+volumes:
+  es_data:
+    driver: local
+  kibana_data:
+    driver: local
+
+services:
+  # Access api endpoint at http://localhost:9200
+  elasticsearch:
+    container_name: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.15.0
+    ports:
+      - 9200:9200
+    volumes:
+      - ./es_data:/usr/share/elasticsearch/data
+    environment:
+      - discovery.type=single-node
+      - cluster.routing.allocation.disk.threshold_enabled=true
+      - cluster.routing.allocation.disk.watermark.low=65%
+      - cluster.routing.allocation.disk.watermark.high=70%
+      - xpack.security.enabled=false
+      - xpack.security.audit.enabled=true
+      - xpack.ml.enabled=false
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    restart: unless-stopped
+
+  # Access Kibana at http://localhost:5601
+  kibana:
+    container_name: kibana
+    image: docker.elastic.co/kibana/kibana:7.15.0
+    ports:
+      - 5601:5601
+    volumes:
+      - ./kibana_data:/usr/share/kibana/data
+    depends_on:
+      - elasticsearch
+    environment:
+      - ELASTICSEARCH_URL=http://eslasticsearch:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+    restart: unless-stopped
