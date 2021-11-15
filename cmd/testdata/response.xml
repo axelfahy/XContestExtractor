@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<rss version="0.91">
+	<channel>
+		<image>
+			<link>https://www.xcontest.org/</link>
+			<title>XContest.org</title>
+			<url>https://s.xcontest.org/img/xcontest-ic.png</url>
+		</image>
+		
+		<title>Flights WORLD</title>
+		<link>http://www.xcontest.org/rss/flights/?world</link>
+		<description>Last 20 flights from league WORLD</description>
+		<language>en</language>
+		<item>
+			<title>07.11.21 [2.47 km :: free_flight] Nicolas Berardini</title>
+			<link>https://www.xcontest.org/world/en/flights/detail:Nicober/7.11.2021/13:13</link>
+			<description></description>
+			<pubDate>Sat, 13 Nov 2021 14:20:13 +0000</pubDate>
+		</item>
+		<item>
+			<title>12.11.21 [5.42 km :: free_triangle] Domingo Vasquez</title>
+			<link>https://www.xcontest.org/world/en/flights/detail:Dimanch0911/12.11.2021/22:46</link>
+			<description></description>
+			<pubDate>Sat, 13 Nov 2021 14:17:52 +0000</pubDate>
+		</item>
+		<item>
+			<title>13.11.21 [10.52 km :: free_triangle] Cozma Remus</title>
+			<link>https://www.xcontest.org/world/en/flights/detail:Central/13.11.2021/11:51</link>
+			<description></description>
+			<pubDate>Sat, 13 Nov 2021 14:17:19 +0000</pubDate>
+		</item>
+		<item>
+			<title>13.11.21 [2.17 km :: free_flight] Petar Panic</title>
+			<link>https://www.xcontest.org/world/en/flights/detail:Petar83/13.11.2021/14:12</link>
+			<description></description>
+			<pubDate>Sat, 13 Nov 2021 14:17:10 +0000</pubDate>
+		</item>
+		<item>
+			<title>13.11.21 [9.43 km :: free_flight] DAVID Alonso VALVERDE</title>
+			<link>https://www.xcontest.org/world/en/flights/detail:Davidalons/13.11.2021/11:43</link>
+			<description></description>
+			<pubDate>Sat, 13 Nov 2021 14:15:25 +0000</pubDate>
+		</item>
+		<item>
+			<title>05.11.21 [4.55 km :: fai_triangle] Nicolas Berardini</title>
+			<link>https://www.xcontest.org/world/en/flights/detail:Nicober/5.11.2021/12:06</link>
+			<description></description>
+			<pubDate>Sat, 13 Nov 2021 14:14:44 +0000</pubDate>
+		</item>
+		<item>
+			<title>13.11.21 [28.20 km :: fai_triangle] Richard Meek</title>
+			<link>https://www.xcontest.org/world/en/flights/detail:RichardMeek/13.11.2021/10:54</link>
+			<description></description>
+			<pubDate>Sat, 13 Nov 2021 14:13:55 +0000</pubDate>
+		</item>
+		<item>
+			<title>13.11.21 [1.30 km :: free_flight] Martynov Alexei</title>
+			<link>https://www.xcontest.org/world/en/flights/detail:a-lexei/13.11.2021/14:08</link>
+			<description></description>
+			<pubDate>Sat, 13 Nov 2021 14:13:21 +0000</pubDate>
+		</item>
+		<item>
+			<title>13.11.21 [25.35 km :: free_triangle] mucha mierda</title>
+			<link>https://www.xcontest.org/world/en/flights/detail:mierda/13.11.2021/11:50</link>
+			<description></description>
+			<pubDate>Sat, 13 Nov 2021 14:13:11 +0000</pubDate>
+		</item>
+		<item>
+			<title>13.11.21 [3.79 km :: free_flight] Juan Carlos Rebolleda Chamorro</title>
+			<link>https://www.xcontest.org/world/en/flights/detail:jcrebolleda/13.11.2021/13:42</link>
+			<description></description>
+			<pubDate>Sat, 13 Nov 2021 14:10:57 +0000</pubDate>
+		</item>
+		<item>
+			<title>13.11.21 [11.19 km :: free_triangle] Matthias Pfister</title>
+			<link>https://www.xcontest.org/world/en/flights/detail:mpfister/13.11.2021/12:45</link>
+			<description></description>
+			<pubDate>Sat, 13 Nov 2021 14:10:56 +0000</pubDate>
+		</item>
+		<item>
+			<title>13.11.21 [1.90 km :: fai_triangle] Peter Mikloš</title>
+			<link>https://www.xcontest.org/world/en/flights/detail:MikiM/13.11.2021/12:45</link>
+			<description></description>
+			<pubDate>Sat, 13 Nov 2021 14:10:49 +0000</pubDate>
+		</item>
+		<item>
+			<title>13.11.21 [1.06 km :: free_flight] robert machel</title>
+			<link>https://www.xcontest.org/world/en/flights/detail:machell/13.11.2021/13:05</link>
+			<description></description>
+			<pubDate>Sat, 13 Nov 2021 14:10:28 +0000</pubDate>
+		</item>
+		<item>
+			<title>13.11.21 [2.97 km :: fai_triangle] Juan Antonio González Jiménez</title>
+			<link>https://www.xcontest.org/world/en/flights/detail:JAGJ/13.11.2021/12:49</link>
+			<description></description>
+			<pubDate>Sat, 13 Nov 2021 14:10:21 +0000</pubDate>
+		</item>
+		<item>
+			<title>13.11.21 [2.46 km :: free_flight] Emanuela Nica</title>
+			<link>https://www.xcontest.org/world/en/flights/detail:Ema/13.11.2021/13:52</link>
+			<description></description>
+			<pubDate>Sat, 13 Nov 2021 14:10:19 +0000</pubDate>
+		</item>
+		<item>
+			<title>13.11.21 [5.33 km :: free_flight] Galfi Botond</title>
+			<link>https://www.xcontest.org/world/en/flights/detail:botes/13.11.2021/13:41</link>
+			<description></description>
+			<pubDate>Sat, 13 Nov 2021 14:07:43 +0000</pubDate>
+		</item>
+		<item>
+			<title>13.11.21 [2.53 km :: free_flight] Claudiu Chicu</title>
+			<link>https://www.xcontest.org/world/en/flights/detail:KlausC/13.11.2021/13:57</link>
+			<description></description>
+			<pubDate>Sat, 13 Nov 2021 14:07:33 +0000</pubDate>
+		</item>
+		<item>
+			<title>13.11.21 [2.58 km :: free_flight] Anita Constantinescu</title>
+			<link>https://www.xcontest.org/world/en/flights/detail:Any/13.11.2021/13:55</link>
+			<description></description>
+			<pubDate>Sat, 13 Nov 2021 14:07:28 +0000</pubDate>
+		</item>
+		<item>
+			<title>13.11.21 [8.22 km :: free_flight] Valerio Zingaropoli</title>
+			<link>https://www.xcontest.org/world/en/flights/detail:Valefly/13.11.2021/10:55</link>
+			<description></description>
+			<pubDate>Sat, 13 Nov 2021 14:07:08 +0000</pubDate>
+		</item>
+		<item>
+			<title>13.11.21 [10.74 km :: free_flight] Daniel Dirjan</title>
+			<link>https://www.xcontest.org/world/en/flights/detail:DDirjan/13.11.2021/13:43</link>
+			<description></description>
+			<pubDate>Sat, 13 Nov 2021 14:06:26 +0000</pubDate>
+		</item>	
+	</channel>
+</rss>
