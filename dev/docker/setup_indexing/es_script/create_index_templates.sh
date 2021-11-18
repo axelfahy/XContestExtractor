@@ -29,34 +29,37 @@ echo "Creating index templates..."
 
 # Set the index template for flights data
 template="${prefix}flight"
-cat << EOF | curl -X PUT "$es_cluster_url/_template/${template}" -H "Content-type: application/json" -d @-
+cat << EOF | curl -X PUT "$es_cluster_url/_index_template/${template}" -H "Content-type: application/json" -d @-
 {
   "index_patterns": [
     "flight*"
   ],
-  "settings": {
-    "number_of_shards": 5
-  },
-  "mappings": {
-    "properties": {
-      "flight_date": {
-        "type": "date"
-      },
-      "full_name": {
-        "type": "text"
-      },
-      "flight_type": {
-        "type": "keyword",
-        "ignore_above": 256
-      },
-      "distance": {
-        "type": "float"
-      },
-      "url": {
-        "type": "text"
-      },
-      "publication_date": {
-        "type": "date"
+  "priority": 1,
+  "template": {
+    "settings": {
+      "number_of_shards": 5
+    },
+    "mappings": {
+      "properties": {
+        "flight_date": {
+          "type": "date"
+        },
+        "full_name": {
+          "type": "text"
+        },
+        "flight_type": {
+          "type": "keyword",
+          "ignore_above": 256
+        },
+        "distance": {
+          "type": "float"
+        },
+        "url": {
+          "type": "text"
+        },
+        "publication_date": {
+          "type": "date"
+        }
       }
     }
   }
