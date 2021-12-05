@@ -1,13 +1,14 @@
 version: '3'
 
+networks:
+  monitoring:
+    external: true
+    name: monitoring
+
 volumes:
   es_data:
     driver: local
   kibana_data:
-    driver: local
-  prometheus_data:
-    driver: local
-  grafana_data:
     driver: local
 
 services:
@@ -17,8 +18,10 @@ services:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.15.0
     ports:
       - 9200:9200
+    networks:
+      - monitoring
     volumes:
-      - ./es_data:/usr/share/elasticsearch/data
+      - /data/es_data:/usr/share/elasticsearch/data
     environment:
       - discovery.type=single-node
       - cluster.routing.allocation.disk.threshold_enabled=true
@@ -28,10 +31,6 @@ services:
       - xpack.security.audit.enabled=true
       - xpack.ml.enabled=false
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
     restart: unless-stopped
 
   # Access Kibana at http://localhost:5601
@@ -40,8 +39,10 @@ services:
     image: docker.elastic.co/kibana/kibana:7.15.0
     ports:
       - 5601:5601
+    networks:
+      - monitoring
     volumes:
-      - ./kibana_data:/usr/share/kibana/data
+      - /data/kibana_data:/usr/share/kibana/data
     depends_on:
       - elasticsearch
     environment:
@@ -57,7 +58,12 @@ services:
       - ELASTICSEARCH_URL=http://elasticsearch:9200
       - ELASTICSEARCH_USERNAME=elastic
       - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
-      - RUN_INTERVAL=60
+      - RUN_INTERVAL_MINUTES=60
+      - PORT=9095
+    ports:
+      - 9095:9095
+    networks:
+      - monitoring
     depends_on:
       - elasticsearch
     restart: unless-stopped

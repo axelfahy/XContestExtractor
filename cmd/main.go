@@ -3,17 +3,18 @@ package main
 import (
 	"encoding/xml"
 	"flag"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
 	"os/signal"
 	"regexp"
-	"strconv"
 	"strings"
 	"time"
 
 	"github.com/kelseyhightower/envconfig"
-	"github.com/sirupsen/logrus"
+	"github.com/sqooba/go-common/logging"
+	"github.com/sqooba/go-common/version"
 )
 
 const (
@@ -27,15 +28,23 @@ const (
 )
 
 var (
-	log = logrus.StandardLogger()
+	log = logging.NewLogger()
 )
 
 type envConfig struct {
+	// Logging
+	LogLevel string `envconfig:"LOG_LEVEL" default:"info"`
 	// ElasticSearch
 	ElasticEndpoint string `envconfig:"ELASTICSEARCH_URL" default:"http://127.0.0.1:9200"`
 	ElasticUser     string `envconfig:"ELASTICSEARCH_USERNAME" default:"CHANGEME"`
 	ElasticPassword string `envconfig:"ELASTICSEARCH_PASSWORD" default:"CHANGEME"`
-	IntervalMin     string `envconfig:"RUN_INTERVAL" default:"60"`
+	// Prometheus
+	MetricsNamespace string `envconfig:"METRICS_NAMESPACE" default:"xcontest"`
+	MetricsSubsystem string `envconfig:"METRICS_SUBSYSTEM" default:"rssextractor"`
+	MetricsPath      string `envconfig:"METRICS_PATH" default:"/metrics"`
+	Port             string `envconfig:"PORT" default:"9095"`
+	// App
+	IntervalMin int `envconfig:"RUN_INTERVAL_MINUTES" default:60`
 }
 
 // XContestEntry represents the RSS feed.
@@ -56,8 +65,8 @@ type Flight struct {
 	FlightDate      int64  `json:"flight_date"`
 	Distance        string `json:"distance"`
 	FlightType      string `json:"flight_type"`
-	Url             string `json:"url"`
 	PublicationDate int64  `json:"publication_date"`
+	Url             string `json:"url"`
 }
 
 // ExtractFlights extracts the flights from the XML.
@@ -72,7 +81,11 @@ func ExtractFlights(body []byte) (*XContestEntry, error) {
 }
 
 func main() {
-	log.Info("Starting XContestRSSExtractor...")
+	log.Infoln("Starting XContestRSSExtractor...")
+	log.Infof("Version 	    : %s", version.Version)
+	log.Infof("Commit       : %s", version.GitCommit)
+	log.Infof("Build date   : %s", version.BuildDate)
+	log.Infof("OSarch       : %s", version.OsArch)
 
 	flag.Parse()
 
@@ -88,23 +101,30 @@ func main() {
 	}
 	log.Infof("Elastic endpoint     : %s", env.ElasticEndpoint)
 	log.Infof("Elastic user         : %s", env.ElasticUser)
-	log.Infof("Elastic password     : %s", env.ElasticPassword)
 	log.Infof("Running interval [m] : %s", env.IntervalMin)
 
-	interval, err := strconv.Atoi(env.IntervalMin)
-	if err != nil {
-		log.Fatalf("Error converting the given interval: %v", err)
+	if err := logging.SetLogLevel(log, env.LogLevel); err != nil {
+		log.Fatalf("Logging level %s do not seem to be right, err = %v", env.LogLevel, err)
 	}
+
+	// Start prometheus server.
+	initPrometheus(env, http.DefaultServeMux)
+	s := http.Server{Addr: fmt.Sprint(":", env.Port)}
+	go func() {
+		log.Fatal(s.ListenAndServe())
+	}()
+
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
 
-	ticker := time.NewTicker(time.Duration(interval) * time.Minute)
+	ticker := time.NewTicker(time.Duration(env.IntervalMin) * time.Minute)
 	defer ticker.Stop()
 
 	for {
 		select {
 		case t := <-ticker.C:
 			log.Infof("Running extractor at %v", t)
+			runsTotal.Inc()
 
 			// Initialization of the ElasticSearch client.
 			manager := NewElasticManager(
@@ -116,7 +136,9 @@ func main() {
 
 			// Read the RSS feed.
 			resp, err := http.Get(url)
+			httpRequestsTotal.Inc()
 			if err != nil {
+				errorsTotal.Inc()
 				log.Fatalf("Error requesting url: %v", err)
 			}
 			defer resp.Body.Close()
@@ -136,10 +158,12 @@ func main() {
 				log.Debugf("Processing flight: %s (%d / %d)", entry, i, len(flights.Channel.Items))
 				publicationDate, err := time.Parse(pubDateLayout, entry.PubDate)
 				if err != nil {
+					errorsTotal.Inc()
 					log.Fatalf("Error converting publication date to timestamp: %v", err)
 				}
 				date, err := time.Parse(flightDateLayout, strings.Split(entry.Title, " ")[0])
 				if err != nil {
+					errorsTotal.Inc()
 					log.Fatalf("Error converting date flight to timestamp: %v", err)
 				}
 				flight := Flight{
@@ -147,17 +171,20 @@ func main() {
 					date.UnixMilli(),
 					regexDistance.FindStringSubmatch(entry.Title)[1],
 					regexFlightType.FindStringSubmatch(entry.Title)[1],
-					entry.Link,
 					publicationDate.UnixMilli(),
+					entry.Link,
 				}
 				flightExists, err := manager.FlightExists(flight)
 				if err != nil {
+					errorsTotal.Inc()
 					log.Errorf("Error searching if the flight exists: %v", err)
 				}
 				if flightExists {
 					log.Infof("Flight %v already exists, skipping.", flight)
+					duplicatesTotal.Inc()
 				} else {
 					err = manager.InsertFlight(flight)
+					documentsTotal.Inc()
 					numInsertion++
 					if err != nil {
 						log.Fatalf("Error indexing flight into ElasticSearch: %v", err)
