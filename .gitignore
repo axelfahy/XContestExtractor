@@ -19,9 +19,5 @@
 # Intellij dependencies
 .idea
 
-# Data folder
-dev/es_data
-dev/kibana_data
-
 # Executable
 xcontest-rss-extractor

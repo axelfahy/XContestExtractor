@@ -42,7 +42,8 @@ cat << EOF | curl -X PUT "$es_cluster_url/_index_template/${template}" -H "Conte
     "mappings": {
       "properties": {
         "flight_date": {
-          "type": "date"
+          "type": "date",
+          "format": "epoch_millis"
         },
         "full_name": {
           "type": "text"
@@ -58,7 +59,8 @@ cat << EOF | curl -X PUT "$es_cluster_url/_index_template/${template}" -H "Conte
           "type": "text"
         },
         "publication_date": {
-          "type": "date"
+          "type": "date",
+          "format": "epoch_millis"
         }
       }
     }
