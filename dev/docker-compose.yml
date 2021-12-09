@@ -22,6 +22,7 @@ services:
       - monitoring
     volumes:
       - /data/es_data:/usr/share/elasticsearch/data
+    mem_limit: 2g
     environment:
       - discovery.type=single-node
       - cluster.routing.allocation.disk.threshold_enabled=true
@@ -31,6 +32,8 @@ services:
       - xpack.security.audit.enabled=true
       - xpack.ml.enabled=false
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - "ES_HEAP_SIZE=700m"
+      - "ES_JAVA_OPTS=-Xms1500m -Xmx1500m"
     restart: unless-stopped
 
   # Access Kibana at http://localhost:5601
@@ -64,6 +67,9 @@ services:
       - 9095:9095
     networks:
       - monitoring
+    labels:
+      - "prometheus.io/scrape=true"
+      - "prometheus.io/extra-labels=app:xcontest"
     depends_on:
       - elasticsearch
     restart: unless-stopped

@@ -11,6 +11,3 @@ Extract flights from the RSS feed of Xcontest (https://www.xcontest.org/rss/flig
 
 The tool is run using docker.
 
-## TODO
-
-- Implementation of metrics to check the ingestion.
