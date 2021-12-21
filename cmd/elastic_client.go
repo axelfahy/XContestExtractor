@@ -46,7 +46,7 @@ func NewElasticManager(endpoint string, username string, password string, indexN
 }
 
 // InsertFlight insert a single flight.
-func (manager *ElasticManager) InsertFlight(flight Flight) error {
+func (manager *ElasticManager) InsertFlight(flight *Flight) error {
 	res, err := manager.client.Index(
 		manager.indexName,
 		esutil.NewJSONReader(flight),
@@ -54,12 +54,12 @@ func (manager *ElasticManager) InsertFlight(flight Flight) error {
 	if err != nil {
 		return err
 	}
-	log.Debug(res)
+	log.Debugf("Elasticsearch result: %s", res)
 	return nil
 }
 
 // FlightExists check if a flight already exist.
-func (manager *ElasticManager) FlightExists(flight Flight) (bool, error) {
+func (manager *ElasticManager) FlightExists(flight *Flight) (bool, error) {
 	// Build the request body.
 	query, _ := json.Marshal(esquerydsl.QueryDoc{
 		Index: manager.indexName,
@@ -81,7 +81,7 @@ func (manager *ElasticManager) FlightExists(flight Flight) (bool, error) {
 			},
 		},
 	})
-	log.Debug(string(query))
+	log.Debugf("Elasticsearch query: %s", string(query))
 	// Perform the search request.
 	res, err := manager.client.Search(
 		manager.client.Search.WithContext(context.Background()),

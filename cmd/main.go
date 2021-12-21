@@ -44,7 +44,7 @@ type envConfig struct {
 	MetricsPath      string `envconfig:"METRICS_PATH" default:"/metrics"`
 	Port             string `envconfig:"PORT" default:"9095"`
 	// App
-	IntervalMin int `envconfig:"RUN_INTERVAL_MINUTES" default:60`
+	IntervalMin int `envconfig:"RUN_INTERVAL_MINUTES" default:"60"`
 }
 
 // XContestEntry represents the RSS feed.
@@ -57,16 +57,6 @@ type XContestEntry struct {
 			PubDate     string `xml:"pubDate"`
 		} `xml:"item"`
 	} `xml:"channel"`
-}
-
-// Flight represents a flight.
-type Flight struct {
-	FullName        string `json:"full_name"`
-	FlightDate      int64  `json:"flight_date"`
-	Distance        string `json:"distance"`
-	FlightType      string `json:"flight_type"`
-	PublicationDate int64  `json:"publication_date"`
-	Url             string `json:"url"`
 }
 
 // ExtractFlights extracts the flights from the XML.
@@ -101,7 +91,7 @@ func main() {
 	}
 	log.Infof("Elastic endpoint     : %s", env.ElasticEndpoint)
 	log.Infof("Elastic user         : %s", env.ElasticUser)
-	log.Infof("Running interval [m] : %s", env.IntervalMin)
+	log.Infof("Running interval [m] : %d", env.IntervalMin)
 
 	if err := logging.SetLogLevel(log, env.LogLevel); err != nil {
 		log.Fatalf("Logging level %s do not seem to be right, err = %v", env.LogLevel, err)
@@ -156,6 +146,11 @@ func main() {
 			// Insert each flight into ES.
 			for i, entry := range flights.Channel.Items {
 				log.Debugf("Processing flight: %s (%d / %d)", entry, i, len(flights.Channel.Items))
+				flight, err := GetFlightInfo(entry.Link)
+				if err != nil {
+					errorsTotal.Inc()
+					log.Errorf("Error getting flight information: %v", err)
+				}
 				publicationDate, err := time.Parse(pubDateLayout, entry.PubDate)
 				if err != nil {
 					errorsTotal.Inc()
@@ -166,14 +161,13 @@ func main() {
 					errorsTotal.Inc()
 					log.Fatalf("Error converting date flight to timestamp: %v", err)
 				}
-				flight := Flight{
-					regexFullName.FindStringSubmatch(entry.Title)[1],
-					date.UnixMilli(),
-					regexDistance.FindStringSubmatch(entry.Title)[1],
-					regexFlightType.FindStringSubmatch(entry.Title)[1],
-					publicationDate.UnixMilli(),
-					entry.Link,
-				}
+				flight.FullName = regexFullName.FindStringSubmatch(entry.Title)[1]
+				flight.FlightDate = date.UnixMilli()
+				flight.Distance = regexDistance.FindStringSubmatch(entry.Title)[1]
+				flight.FlightType = regexFlightType.FindStringSubmatch(entry.Title)[1]
+				flight.PublicationDate = publicationDate.UnixMilli()
+				flight.Url = entry.Link
+
 				flightExists, err := manager.FlightExists(flight)
 				if err != nil {
 					errorsTotal.Inc()
