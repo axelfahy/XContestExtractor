@@ -61,6 +61,21 @@ cat << EOF | curl -X PUT "$es_cluster_url/_index_template/${template}" -H "Conte
         "publication_date": {
           "type": "date",
           "format": "epoch_millis"
+        },
+        "average_speed": {
+          "type": "float"
+        },
+        "country_code": {
+          "type": "keyword"
+        },
+        "flight_time": {
+          "type": "text"
+        },
+        "take_off": {
+          "type": "keyword"
+        },
+        "altitude_max": {
+          "type": "integer"
         }
       }
     }
