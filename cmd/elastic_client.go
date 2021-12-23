@@ -4,12 +4,11 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"github.com/elastic/go-elasticsearch/v8"
+	"github.com/elastic/go-elasticsearch/v8/esutil"
 	"github.com/mottaquikarim/esquerydsl"
 	"io"
 	"io/ioutil"
-
-	"github.com/elastic/go-elasticsearch/v8"
-	"github.com/elastic/go-elasticsearch/v8/esutil"
 )
 
 type ElasticManager struct {
@@ -59,24 +58,26 @@ func (manager *ElasticManager) InsertFlight(flight *Flight) error {
 }
 
 // FlightExists check if a flight already exist.
-func (manager *ElasticManager) FlightExists(flight *Flight) (bool, error) {
+//
+// The comparison is done with the full name, the distance and the date of the flight.
+func (manager *ElasticManager) FlightExists(fullName string, distance float64, date int64) (bool, error) {
 	// Build the request body.
 	query, _ := json.Marshal(esquerydsl.QueryDoc{
 		Index: manager.indexName,
 		And: []esquerydsl.QueryItem{
 			{
 				Field: "full_name",
-				Value: flight.FullName,
+				Value: fullName,
 				Type:  esquerydsl.Match,
 			},
 			{
 				Field: "distance",
-				Value: flight.Distance,
+				Value: distance,
 				Type:  esquerydsl.Match,
 			},
 			{
 				Field: "flight_date",
-				Value: flight.FlightDate,
+				Value: date,
 				Type:  esquerydsl.Match,
 			},
 		},

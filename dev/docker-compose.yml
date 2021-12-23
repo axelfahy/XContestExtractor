@@ -61,7 +61,7 @@ services:
       - ELASTICSEARCH_URL=http://elasticsearch:9200
       - ELASTICSEARCH_USERNAME=elastic
       - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
-      - RUN_INTERVAL_MINUTES=60
+      - RUN_INTERVAL_MINUTES=5
       - PORT=9095
     ports:
       - 9095:9095

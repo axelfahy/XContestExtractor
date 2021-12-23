@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/signal"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -44,7 +45,7 @@ type envConfig struct {
 	MetricsPath      string `envconfig:"METRICS_PATH" default:"/metrics"`
 	Port             string `envconfig:"PORT" default:"9095"`
 	// App
-	IntervalMin int `envconfig:"RUN_INTERVAL_MINUTES" default:"60"`
+	IntervalMin int `envconfig:"RUN_INTERVAL_MINUTES" default:"5"`
 }
 
 // XContestEntry represents the RSS feed.
@@ -146,37 +147,45 @@ func main() {
 			// Insert each flight into ES.
 			for i, entry := range flights.Channel.Items {
 				log.Debugf("Processing flight: %s (%d / %d)", entry, i, len(flights.Channel.Items))
-				flight, err := GetFlightInfo(entry.Link)
+
+				fullName := regexFullName.FindStringSubmatch(entry.Title)[1]
+				distance, err := strconv.ParseFloat(regexDistance.FindStringSubmatch(entry.Title)[1], 64)
 				if err != nil {
 					errorsTotal.Inc()
-					log.Errorf("Error getting flight information: %v", err)
-				}
-				publicationDate, err := time.Parse(pubDateLayout, entry.PubDate)
-				if err != nil {
-					errorsTotal.Inc()
-					log.Fatalf("Error converting publication date to timestamp: %v", err)
+					log.Fatalf("Error converting distance flight to float: %v", err)
 				}
 				date, err := time.Parse(flightDateLayout, strings.Split(entry.Title, " ")[0])
 				if err != nil {
 					errorsTotal.Inc()
 					log.Fatalf("Error converting date flight to timestamp: %v", err)
 				}
-				flight.FullName = regexFullName.FindStringSubmatch(entry.Title)[1]
-				flight.FlightDate = date.UnixMilli()
-				flight.Distance = regexDistance.FindStringSubmatch(entry.Title)[1]
-				flight.FlightType = regexFlightType.FindStringSubmatch(entry.Title)[1]
-				flight.PublicationDate = publicationDate.UnixMilli()
-				flight.Url = entry.Link
 
-				flightExists, err := manager.FlightExists(flight)
+				flightExists, err := manager.FlightExists(fullName, distance, date.UnixMilli())
 				if err != nil {
 					errorsTotal.Inc()
 					log.Errorf("Error searching if the flight exists: %v", err)
 				}
 				if flightExists {
-					log.Infof("Flight %v already exists, skipping.", flight)
+					log.Info("Flight already exists, skipping.")
 					duplicatesTotal.Inc()
 				} else {
+					flight, err := GetFlightInfo(entry.Link)
+					if err != nil {
+						errorsTotal.Inc()
+						log.Errorf("Error getting flight information: %v", err)
+					}
+					publicationDate, err := time.Parse(pubDateLayout, entry.PubDate)
+					if err != nil {
+						errorsTotal.Inc()
+						log.Fatalf("Error converting publication date to timestamp: %v", err)
+					}
+					flight.FullName = fullName
+					flight.FlightDate = date.UnixMilli()
+					flight.Distance = distance
+					flight.FlightType = regexFlightType.FindStringSubmatch(entry.Title)[1]
+					flight.PublicationDate = publicationDate.UnixMilli()
+					flight.Url = entry.Link
+
 					err = manager.InsertFlight(flight)
 					documentsTotal.Inc()
 					numInsertion++
@@ -185,7 +194,7 @@ func main() {
 					}
 				}
 			}
-			log.Infof("Number of flights inserted: %d", len(flights.Channel.Items))
+			log.Infof("Number of flights inserted: %d", numInsertion)
 		case <-interrupt:
 			log.Info("Exiting.")
 			return

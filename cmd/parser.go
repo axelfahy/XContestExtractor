@@ -20,7 +20,7 @@ var (
 type Flight struct {
 	FullName        string  `json:"full_name"`
 	FlightDate      int64   `json:"flight_date"`
-	Distance        string  `json:"distance"`
+	Distance        float64 `json:"distance"`
 	FlightType      string  `json:"flight_type"`
 	PublicationDate int64   `json:"publication_date"`
 	Url             string  `json:"url"`
