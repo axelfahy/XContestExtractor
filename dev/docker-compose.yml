@@ -62,6 +62,7 @@ services:
       - ELASTICSEARCH_USERNAME=elastic
       - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
       - RUN_INTERVAL_MINUTES=5
+      - LOG_LEVEL=info
       - PORT=9095
     ports:
       - 9095:9095

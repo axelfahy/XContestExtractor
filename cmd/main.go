@@ -73,10 +73,10 @@ func ExtractFlights(body []byte) (*XContestEntry, error) {
 
 func main() {
 	log.Infoln("Starting XContestRSSExtractor...")
-	log.Infof("Version 	    : %s", version.Version)
-	log.Infof("Commit       : %s", version.GitCommit)
-	log.Infof("Build date   : %s", version.BuildDate)
-	log.Infof("OSarch       : %s", version.OsArch)
+	log.Infof("Version               : %s", version.Version)
+	log.Infof("Commit                : %s", version.GitCommit)
+	log.Infof("Build date            : %s", version.BuildDate)
+	log.Infof("OSarch                : %s", version.OsArch)
 
 	flag.Parse()
 
@@ -90,9 +90,9 @@ func main() {
 	if err := envconfig.Process("", &env); err != nil {
 		log.Fatalf("Failed to process env var: %v", err)
 	}
-	log.Infof("Elastic endpoint     : %s", env.ElasticEndpoint)
-	log.Infof("Elastic user         : %s", env.ElasticUser)
-	log.Infof("Running interval [m] : %d", env.IntervalMin)
+	log.Infof("Elastic endpoint      : %s", env.ElasticEndpoint)
+	log.Infof("Elastic user          : %s", env.ElasticUser)
+	log.Infof("Running interval [m]  : %d", env.IntervalMin)
 
 	if err := logging.SetLogLevel(log, env.LogLevel); err != nil {
 		log.Fatalf("Logging level %s do not seem to be right, err = %v", env.LogLevel, err)
@@ -146,19 +146,23 @@ func main() {
 			numInsertion := 0
 			// Insert each flight into ES.
 			for i, entry := range flights.Channel.Items {
-				log.Debugf("Processing flight: %s (%d / %d)", entry, i, len(flights.Channel.Items))
+				log.Debugf("Processing flight  : %s (%d / %d)", entry, i, len(flights.Channel.Items))
 
 				fullName := regexFullName.FindStringSubmatch(entry.Title)[1]
+				log.Debugf("Full name          : %s", fullName)
 				distance, err := strconv.ParseFloat(regexDistance.FindStringSubmatch(entry.Title)[1], 64)
 				if err != nil {
 					errorsTotal.Inc()
 					log.Fatalf("Error converting distance flight to float: %v", err)
 				}
+				log.Debugf("Distance           : %f", distance)
+
 				date, err := time.Parse(flightDateLayout, strings.Split(entry.Title, " ")[0])
 				if err != nil {
 					errorsTotal.Inc()
 					log.Fatalf("Error converting date flight to timestamp: %v", err)
 				}
+				log.Debugf("Date               : %s", date)
 
 				flightExists, err := manager.FlightExists(fullName, distance, date.UnixMilli())
 				if err != nil {
@@ -179,12 +183,17 @@ func main() {
 						errorsTotal.Inc()
 						log.Fatalf("Error converting publication date to timestamp: %v", err)
 					}
+					log.Debugf("Publication date   : %s", publicationDate)
+
 					flight.FullName = fullName
 					flight.FlightDate = date.UnixMilli()
 					flight.Distance = distance
 					flight.FlightType = regexFlightType.FindStringSubmatch(entry.Title)[1]
 					flight.PublicationDate = publicationDate.UnixMilli()
 					flight.Url = entry.Link
+
+					log.Debugf("Flight type        : %s", flight.FlightType)
+					log.Debugf("Url                : %s", flight.Url)
 
 					err = manager.InsertFlight(flight)
 					documentsTotal.Inc()
