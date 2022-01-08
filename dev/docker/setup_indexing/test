@@ -1,6 +1,0 @@
-curl -XGET 'localhost:9200/flight-000001/_search' -H 'Content-Type: application/json' -d'
-{
-    "query" : {
-        "match_all" : {}
-    }
-}'

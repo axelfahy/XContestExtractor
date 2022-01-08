@@ -1,4 +1,4 @@
-package main
+package elastic
 
 import (
 	"bytes"
@@ -9,6 +9,13 @@ import (
 	"github.com/mottaquikarim/esquerydsl"
 	"io"
 	"io/ioutil"
+
+	"fahy.xyz/xcontestextractor/parser"
+	"github.com/sqooba/go-common/logging"
+)
+
+var (
+	log = logging.NewLogger()
 )
 
 type ElasticManager struct {
@@ -45,7 +52,7 @@ func NewElasticManager(endpoint string, username string, password string, indexN
 }
 
 // InsertFlight insert a single flight.
-func (manager *ElasticManager) InsertFlight(flight *Flight) error {
+func (manager *ElasticManager) InsertFlight(flight *parser.Flight) error {
 	res, err := manager.client.Index(
 		manager.indexName,
 		esutil.NewJSONReader(flight),

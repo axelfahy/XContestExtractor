@@ -76,6 +76,9 @@ cat << EOF | curl -X PUT "$es_cluster_url/_index_template/${template}" -H "Conte
         },
         "altitude_max": {
           "type": "integer"
+        },
+        "parsing_source": {
+          "type": "keyword"
         }
       }
     }

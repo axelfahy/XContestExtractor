@@ -1,4 +1,4 @@
-package main
+package parser
 
 import (
 	"io/ioutil"
@@ -19,7 +19,7 @@ func TestGetFlightInfo01(t *testing.T) {
 	}
 	httpmock.RegisterResponder("GET", url,
 		httpmock.NewStringResponder(200, string(content)))
-	flight, err := GetFlightInfo(url)
+	flight, err := GetFlightInfo(url, "test")
 	if err != nil {
 		t.Errorf("Error getting flight information: %v", err)
 	}
@@ -39,7 +39,7 @@ func TestGetFlightInfo02(t *testing.T) {
 	}
 	httpmock.RegisterResponder("GET", url,
 		httpmock.NewStringResponder(200, string(content)))
-	flight, err := GetFlightInfo(url)
+	flight, err := GetFlightInfo(url, "test")
 	if err != nil {
 		t.Errorf("Error getting flight information: %v", err)
 	}
@@ -59,7 +59,7 @@ func TestGetFlightInfo03(t *testing.T) {
 	}
 	httpmock.RegisterResponder("GET", url,
 		httpmock.NewStringResponder(200, string(content)))
-	flight, err := GetFlightInfo(url)
+	flight, err := GetFlightInfo(url, "test")
 	if err != nil {
 		t.Errorf("Error getting flight information: %v", err)
 	}

@@ -1,4 +1,4 @@
-package main
+package parser
 
 import (
 	"net/http"
@@ -6,9 +6,12 @@ import (
 	"strconv"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/sqooba/go-common/logging"
 )
 
 var (
+	log = logging.NewLogger()
+
 	regexTakeoff  = regexp.MustCompile(`⛳ (.*?) \[`)
 	regexCountry  = regexp.MustCompile(`\[([A-Z]{2})\]`)
 	regexDuration = regexp.MustCompile(`⌛ ([0-9:].*?) ∷`)
@@ -29,10 +32,11 @@ type Flight struct {
 	AverageSpeed    float64 `json:"average_speed"`
 	FlightDuration  string  `json:"flight_duration"`
 	AltitudeMax     int64   `json:"altitude_max"`
+	ParsingSource   string  `json:"parsing_source"`
 }
 
-func GetFlightInfo(url string) (*Flight, error) {
-	flight := Flight{}
+func GetFlightInfo(url string, source string) (*Flight, error) {
+	flight := Flight{ParsingSource: source}
 	response, err := http.Get(url)
 	if err != nil {
 		log.Errorf("Error reading url: %v", err)
