@@ -184,6 +184,7 @@ func main() {
 					metrics.DuplicatesTotal.Inc()
 				} else {
 					flight, err := parser.GetFlightInfo(entry.Link, source)
+					metrics.HttpRequestsTotal.Inc()
 					if err != nil {
 						metrics.ErrorsTotal.Inc()
 						log.Errorf("Error getting flight information: %v", err)

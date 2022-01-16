@@ -20,4 +20,6 @@
 .idea
 
 # Executable
+xcontest-arch-extractor
 xcontest-rss-extractor
+headless-shell

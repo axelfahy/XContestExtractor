@@ -70,7 +70,30 @@ services:
       - monitoring
     labels:
       - "prometheus.io/scrape=true"
-      - "prometheus.io/extra-labels=app:xcontest"
+      - "prometheus.io/extra-labels=app:xcontest-rss"
     depends_on:
       - elasticsearch
     restart: unless-stopped
+
+  # Archive extractor
+  xcontest-arch-extractor:
+    image: fahy.xyz/xcontest-arch-extractor:v1
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+      - LOG_LEVEL=debug
+      - PORT=9096
+      - URL=https://www.xcontest.org/2021/world/en/flights/daily-score-pg/#flights[start]=
+      - START_FLIGHT_NUMBER=0
+    ports:
+      - 9096:9096
+    networks:
+      - monitoring
+    labels:
+      - "prometheus.io/scrape=true"
+      - "prometheus.io/port=9096"
+      - "prometheus.io/extra-labels=app:xcontest-arch"
+    depends_on:
+      - elasticsearch
+    restart: "no"
