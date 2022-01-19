@@ -145,12 +145,14 @@ func main() {
 			defer resp.Body.Close()
 			body, err := io.ReadAll(resp.Body)
 			if err != nil {
+				metrics.ErrorsTotal.Inc()
 				log.Fatalf("Error reading the body: %v", err)
 			}
 
 			// Extract the flights.
 			flights, err := ExtractFlights(body)
 			if err != nil {
+				metrics.ErrorsTotal.Inc()
 				log.Fatalf("Error extracting flights from XML: %v", err)
 			}
 			numInsertion := 0
@@ -210,6 +212,7 @@ func main() {
 					metrics.DocumentsTotal.Inc()
 					numInsertion++
 					if err != nil {
+						metrics.ErrorsTotal.Inc()
 						log.Fatalf("Error indexing flight into ElasticSearch: %v", err)
 					}
 				}
