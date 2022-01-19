@@ -22,10 +22,9 @@ import (
 
 const (
 	// Index to store the entries.
-	indexName        string = "flight-000001"
-	source           string = "archive"
-	flightDateLayout string = "02.01.2006"
-	flightsByPage    int    = 100
+	indexName     string = "flight-000001"
+	source        string = "archive"
+	flightsByPage int    = 100
 )
 
 var (
@@ -229,10 +228,10 @@ func main() {
 						log.Debugf("Extracted link: %s", entry.Link)
 						// Extract the date.
 						split := strings.Split(entry.Link, "/")
-						date, err := time.Parse(flightDateLayout, split[len(split)-2])
+						date, err := parser.ParseDate(split[len(split)-2])
 						if err != nil {
 							metrics.ErrorsTotal.Inc()
-							log.Fatalf("Error converting date flight to timestamp: %v", err)
+							log.Fatalf("Error converting the date flight: %v", err)
 						}
 						entry.FlightDate = date.UnixMilli()
 					}

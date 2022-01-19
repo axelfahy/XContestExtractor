@@ -1,9 +1,11 @@
 package parser
 
 import (
+	"errors"
 	"net/http"
 	"regexp"
 	"strconv"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/sqooba/go-common/logging"
@@ -73,4 +75,16 @@ func GetFlightInfo(url string, source string) (*Flight, error) {
 		return &flight, nil
 	}
 	return nil, err
+}
+
+// ParseDate parse a date using multiple formats.
+func ParseDate(input string) (time.Time, error) {
+	flightDateLayouts := [2]string{"02.01.2006", "2.01.2006"}
+	for _, format := range flightDateLayouts {
+		t, err := time.Parse(format, input)
+		if err == nil {
+			return t, nil
+		}
+	}
+	return time.Time{}, errors.New("unrecognized time format")
 }

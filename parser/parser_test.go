@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"path/filepath"
 	"testing"
+	"time"
 
 	"github.com/jarcoal/httpmock"
 )
@@ -68,5 +69,31 @@ func TestGetFlightInfo03(t *testing.T) {
 	}
 	if flight.TakeOff != "?" {
 		t.Errorf("Retrieved take-off is wrong: %s", flight.TakeOff)
+	}
+}
+
+func TestParseDate01(t *testing.T) {
+	input := "21.09.2021"
+	result := time.Date(2021, 9, 21, 0, 0, 0, 0, time.UTC)
+
+	date, err := ParseDate(input)
+	if err != nil {
+		t.Errorf("Error parsing the date: %v", err)
+	}
+	if result != date {
+		t.Errorf("Parsing date is wrong: %s != %s", result, date)
+	}
+}
+
+func TestParseDate02(t *testing.T) {
+	input := "1.09.2021"
+	result := time.Date(2021, 9, 1, 0, 0, 0, 0, time.UTC)
+
+	date, err := ParseDate(input)
+	if err != nil {
+		t.Errorf("Error parsing the date: %v", err)
+	}
+	if result != date {
+		t.Errorf("Parsing date is wrong: %s != %s", result, date)
 	}
 }
