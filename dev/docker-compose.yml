@@ -61,7 +61,7 @@ services:
       - ELASTICSEARCH_URL=http://elasticsearch:9200
       - ELASTICSEARCH_USERNAME=elastic
       - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
-      - RUN_INTERVAL_MINUTES=5
+      - RUN_INTERVAL_MINUTES=2
       - LOG_LEVEL=info
       - PORT=9095
     ports:
@@ -84,7 +84,7 @@ services:
       - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
       - LOG_LEVEL=debug
       - PORT=9096
-      - URL=https://www.xcontest.org/2021/world/en/flights/daily-score-pg/#flights[start]=
+      - URL=https://www.xcontest.org/2021/world/en/flights/#flights[start]=
       - START_FLIGHT_NUMBER=0
     ports:
       - 9096:9096

@@ -137,7 +137,6 @@ func main() {
 	)
 
 	flightNumber := env.StartFlightNumber
-	numInsertion := 0
 
 	// Process all the pages until there is no more flight.
 	for {
@@ -147,7 +146,7 @@ func main() {
 
 		data, _ := getFlights(url)
 		metrics.HttpRequestsTotal.Inc()
-		if data == "" {
+		if strings.TrimSpace(data) == "" {
 			log.Infof("No more flight to insert (flight number=%d)", flightNumber)
 			break
 		}
@@ -188,7 +187,8 @@ func main() {
 					metrics.HttpRequestsTotal.Inc()
 					if err != nil {
 						metrics.ErrorsTotal.Inc()
-						log.Errorf("Error getting flight information: %v", err)
+						log.Errorf("Error getting flight information of %s: %v", entry.Link, err)
+						continue
 					}
 
 					flight.FullName = entry.FullName
@@ -204,7 +204,6 @@ func main() {
 					err = manager.InsertFlight(flight)
 					log.Debug("Flight inserted successfully.")
 					metrics.DocumentsTotal.Inc()
-					numInsertion++
 					if err != nil {
 						metrics.ErrorsTotal.Inc()
 						log.Fatalf("Error indexing flight into ElasticSearch: %v", err)

@@ -2,6 +2,7 @@ package parser
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -17,7 +18,7 @@ var (
 	regexTakeoff  = regexp.MustCompile(`⛳ (.*?) \[`)
 	regexCountry  = regexp.MustCompile(`\[([A-Z]{2})\]`)
 	regexDuration = regexp.MustCompile(`⌛ ([0-9:].*?) ∷`)
-	regexSpeed    = regexp.MustCompile(`ø (.*?) km/h ∷`)
+	regexSpeed    = regexp.MustCompile(`∷ ø (.*?) km/h ∷`)
 	regexAltitude = regexp.MustCompile(`⊺ (.*?) m`)
 )
 
@@ -35,6 +36,15 @@ type Flight struct {
 	FlightDuration  string  `json:"flight_duration"`
 	AltitudeMax     int64   `json:"altitude_max"`
 	ParsingSource   string  `json:"parsing_source"`
+}
+
+// ExtractMatch extracts the first group of the regex if it matches.
+func extractMatch(str string, regex *regexp.Regexp) (string, error) {
+	match := regex.FindStringSubmatch(str)
+	if len(match) > 0 {
+		return match[1], nil
+	}
+	return "", fmt.Errorf("error extracting %s with regex %s", str, regex)
 }
 
 func GetFlightInfo(url string, source string) (*Flight, error) {
@@ -57,24 +67,39 @@ func GetFlightInfo(url string, source string) (*Flight, error) {
 	if matches.Length() > 0 {
 		row, _ := matches.First().Attr("content")
 		log.Tracef("Extracted row: %v", row)
-		flight.TakeOff = regexTakeoff.FindStringSubmatch(row)[1]
-		flight.CountryCode = regexCountry.FindStringSubmatch(row)[1]
-		flight.FlightDuration = regexDuration.FindStringSubmatch(row)[1]
-		speed, err := strconv.ParseFloat(regexSpeed.FindStringSubmatch(row)[1], 64)
-		if err != nil {
-			log.Errorf("Error parsing speed: %v", err)
+		if flight.TakeOff, err = extractMatch(row, regexTakeoff); err != nil {
+			flight.TakeOff = "unknown"
+		}
+		if flight.CountryCode, err = extractMatch(row, regexCountry); err != nil {
 			return nil, err
 		}
-		flight.AverageSpeed = speed
-		altitude, err := strconv.ParseInt(regexAltitude.FindStringSubmatch(row)[1], 10, 64)
-		if err != nil {
-			log.Errorf("Error parsing altitude: %v", err)
+		if flight.FlightDuration, err = extractMatch(row, regexDuration); err != nil {
 			return nil, err
 		}
-		flight.AltitudeMax = altitude
+		if speedMatch, err := extractMatch(row, regexSpeed); err != nil {
+			return nil, err
+		} else {
+			speed, err := strconv.ParseFloat(speedMatch, 64)
+			if err != nil {
+				log.Errorf("Error parsing speed: %v", err)
+				return nil, err
+			}
+			flight.AverageSpeed = speed
+		}
+		if altitudeMatch, err := extractMatch(row, regexAltitude); err != nil {
+			return nil, err
+		} else {
+			altitude, err := strconv.ParseInt(altitudeMatch, 10, 64)
+			if err != nil {
+				log.Errorf("Error parsing altitude: %v", err)
+				return nil, err
+			}
+			flight.AltitudeMax = altitude
+		}
 		return &flight, nil
+	} else {
+		return nil, fmt.Errorf("no match on page for url: %s", url)
 	}
-	return nil, err
 }
 
 // ParseDate parse a date using multiple formats.
