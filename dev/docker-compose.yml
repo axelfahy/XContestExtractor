@@ -10,6 +10,8 @@ volumes:
     driver: local
   kibana_data:
     driver: local
+  stats_data:
+    driver: local
 
 services:
   # Access api endpoint at http://localhost:9200
@@ -97,3 +99,13 @@ services:
     depends_on:
       - elasticsearch
     restart: "no"
+
+  # Weekly stats
+  weekly-stats:
+    image: fahy.xyz/xcontest-weekly-stats:v1
+    environment:
+      - ES_CLUSTER_URL=http://elasticsearch:9200
+    networks:
+      - monitoring
+    volumes:
+      - /data/stats_data:/output/

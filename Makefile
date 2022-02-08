@@ -22,10 +22,6 @@ SETUP_IMG=setup_indexing
 
 all: ensure package_arch_extractor package_rss_extractor
 
-build-setup:
-	docker build -f $(SETUP_PATH) -t $(SETUP_IMG) .
-	docker run --env "ES_CLUSTER_URL=$(ES_CLUSTER_URL)" --network="host" $(SETUP_IMG)
-
 ensure:
 	env GOOS=linux $(GOCMD) mod download
 
@@ -34,6 +30,15 @@ clean:
 
 lint:
 	$(GOLINT) ./...
+
+build_setup_indexing:
+	docker build -f $(SETUP_PATH) -t $(SETUP_IMG) .
+
+run_setup_indexing: build_setup_indexing
+	docker run --env "ES_CLUSTER_URL=$(ES_CLUSTER_URL)" --network="host" $(SETUP_IMG)
+
+build_weekly_stats:
+	docker build -f ./docker/stats/Dockerfile -t fahy.xyz/xcontest-weekly-stats:${VERSION_MAJOR} .
 
 build_rss_extractor:
 	env GOOS=linux CGO_ENABLED=0 $(GOCMD) mod download && \
@@ -80,6 +85,9 @@ package_arch_extractor:
 		-t ${GO_PACKAGE_ARCH}:$(VERSION_MAJOR) \
 		--load \
 		.
+
+package_weekly_stats:
+	docker build -f ./dev/docker/stats/Dockerfile -t fahy.xyz/xcontest-weekly-stats:${VERSION_MAJOR} .
 
 test:
 	$(GOTEST) ./...

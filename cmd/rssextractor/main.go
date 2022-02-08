@@ -23,7 +23,7 @@ import (
 
 const (
 	// Index to store the entries.
-	indexName string = "flight-000001"
+	indexName string = "flight"
 	source    string = "rss"
 	// Url of the RSS feed of XContest.
 	url string = "https://www.xcontest.org/rss/flights/?world"

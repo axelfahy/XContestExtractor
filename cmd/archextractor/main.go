@@ -22,7 +22,7 @@ import (
 
 const (
 	// Index to store the entries.
-	indexName     string = "flight-000001"
+	indexName     string = "flight"
 	source        string = "archive"
 	flightsByPage int    = 100
 )

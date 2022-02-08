@@ -31,4 +31,5 @@ ENTRYPOINT ["dumb-init", "--"]
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /src/xcontest-arch-extractor /xcontest-arch-extractor
 
+#HEALTHCHECK --interval=900s --timeout=30s --retries=1 --start-period=30s CMD ["/xcontest-arch-extractor", "--health-check"]
 CMD ["/xcontest-arch-extractor"]

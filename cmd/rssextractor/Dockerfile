@@ -23,4 +23,5 @@ FROM --platform=$BUILDPLATFORM alpine
 
 COPY --from=builder /src/xcontest-rss-extractor /xcontest-rss-extractor
 
+#HEALTHCHECK --interval=900s --timeout=30s --retries=1 --start-period=30s CMD ["/xcontest-arch-extractor", "--health-check"]
 ENTRYPOINT ["/xcontest-rss-extractor"]
