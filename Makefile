@@ -8,17 +8,16 @@ BUILD_PLATFORM=linux/amd64
 PACKAGE_PLATFORM=$(BUILD_PLATFORM)
 VERSION_MAJOR=$(shell echo $(VERSION) | cut -f1 -d.)
 VERSION_MINOR=$(shell echo $(VERSION) | cut -f2 -d.)
-BINARY_NAME_ARCH=xcontest-arch-extractor
-BINARY_NAME_RSS=xcontest-rss-extractor
-GO_PACKAGE_ARCH=fahy.xyz/xcontest-arch-extractor
-GO_PACKAGE_RSS=fahy.xyz/xcontest-rss-extractor
 GIT_COMMIT=$(shell git rev-parse HEAD)
 GIT_DIRTY=$(shell test -n "`git status --porcelain`" && echo "+CHANGES" || true)
 BUILD_DATE=$(shell date '+%Y-%m-%d-%H:%M:%S')
-# Setup indexing
+# Image names
+PACKAGE_SETUP_INDEXING=fahy.xyz/setup-indexing
+GO_PACKAGE_ARCH=fahy.xyz/xcontest-arch-extractor
+GO_PACKAGE_RSS=fahy.xyz/xcontest-rss-extractor
+PACKAGE_STATS_WEEKLY=fahy.xyz/xcontest-weekly-stats
+# App settings
 ES_CLUSTER_URL=http://localhost:9200
-SETUP_PATH=docker/setup_indexing/Dockerfile
-SETUP_IMG=setup_indexing
 
 all: ensure package_arch_extractor package_rss_extractor
 
@@ -32,23 +31,21 @@ lint:
 	$(GOLINT) ./...
 
 build_setup_indexing:
-	docker build -f $(SETUP_PATH) -t $(SETUP_IMG) .
+	docker build -f docker/setup_indexing/Dockerfile \
+		-t $(PACKAGE_SETUP_INDEXING):$(VERSION) \
+		-t $(PACKAGE_SETUP_INDEXING):$(VERSION_MAJOR).$(VERSION_MINOR) \
+		-t $(PACKAGE_SETUP_INDEXING):$(VERSION_MAJOR) \
+		.
 
 run_setup_indexing: build_setup_indexing
-	docker run --env "ES_CLUSTER_URL=$(ES_CLUSTER_URL)" --network="host" $(SETUP_IMG)
+	docker run --env "ES_CLUSTER_URL=$(ES_CLUSTER_URL)" --network="host" $(PACKAGE_SETUP_INDEXING):$(VERSION_MAJOR)
 
 build_weekly_stats:
-	docker build -f ./docker/stats/Dockerfile -t fahy.xyz/xcontest-weekly-stats:${VERSION_MAJOR} .
-
-build_rss_extractor:
-	env GOOS=linux CGO_ENABLED=0 $(GOCMD) mod download && \
-	env GOOS=linux CGO_ENABLED=0 \
-		$(GOBUILD) \
-		-ldflags "-X github.com/sqooba/go-common/version.GitCommit=${GIT_COMMIT}${GIT_DIRTY}" \
-			"-X github.com/sqooba/go-common/version.BuildDate=${BUILD_DATE}" \
-			"-X github.com/sqooba/go-common/version.Version=${VERSION}" \
-		-o $(BINARY_NAME_RSS) \
-		./cmd/rssextractor/
+	docker build -f ./docker/stats/Dockerfile \
+		-t $(PACKAGE_STATS_WEEKLY):$(VERSION) \
+		-t $(PACKAGE_STATS_WEEKLY):$(VERSION_MAJOR).$(VERSION_MINOR) \
+		-t $(PACKAGE_STATS_WEEKLY):$(VERSION_MAJOR) \
+		.
 
 package_rss_extractor:
 	docker buildx build -f ./cmd/rssextractor/Dockerfile \
@@ -57,21 +54,11 @@ package_rss_extractor:
 		--build-arg BUILD_DATE=$(BUILD_DATE) \
 		--build-arg GIT_COMMIT=$(GIT_COMMIT) \
 		--build-arg GIT_DIRTY=$(GIT_DIRTY) \
-		-t ${GO_PACKAGE_RSS}:$(VERSION) \
-		-t ${GO_PACKAGE_RSS}:$(VERSION_MAJOR).$(VERSION_MINOR) \
-		-t ${GO_PACKAGE_RSS}:$(VERSION_MAJOR) \
+		-t $(GO_PACKAGE_RSS):$(VERSION) \
+		-t $(GO_PACKAGE_RSS):$(VERSION_MAJOR).$(VERSION_MINOR) \
+		-t $(GO_PACKAGE_RSS):$(VERSION_MAJOR) \
 		--load \
 		.
-
-build_arch_extractor:
-	env GOOS=linux CGO_ENABLED=0 $(GOCMD) mod download && \
-	env GOOS=linux CGO_ENABLED=0 \
-		$(GOBUILD) \
-		-ldflags "-X github.com/sqooba/go-common/version.GitCommit=${GIT_COMMIT}${GIT_DIRTY}" \
-			"-X github.com/sqooba/go-common/version.BuildDate=${BUILD_DATE}" \
-			"-X github.com/sqooba/go-common/version.Version=${VERSION}" \
-		-o $(BINARY_NAME_ARCH) \
-		./cmd/archextractor/
 
 package_arch_extractor:
 	docker buildx build -f ./cmd/archextractor/Dockerfile \
@@ -80,9 +67,9 @@ package_arch_extractor:
 		--build-arg BUILD_DATE=$(BUILD_DATE) \
 		--build-arg GIT_COMMIT=$(GIT_COMMIT) \
 		--build-arg GIT_DIRTY=$(GIT_DIRTY) \
-		-t ${GO_PACKAGE_ARCH}:$(VERSION) \
-		-t ${GO_PACKAGE_ARCH}:$(VERSION_MAJOR).$(VERSION_MINOR) \
-		-t ${GO_PACKAGE_ARCH}:$(VERSION_MAJOR) \
+		-t $(GO_PACKAGE_ARCH):$(VERSION) \
+		-t $(GO_PACKAGE_ARCH):$(VERSION_MAJOR).$(VERSION_MINOR) \
+		-t $(GO_PACKAGE_ARCH):$(VERSION_MAJOR) \
 		--load \
 		.
 
