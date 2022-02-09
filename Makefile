@@ -17,7 +17,7 @@ GIT_DIRTY=$(shell test -n "`git status --porcelain`" && echo "+CHANGES" || true)
 BUILD_DATE=$(shell date '+%Y-%m-%d-%H:%M:%S')
 # Setup indexing
 ES_CLUSTER_URL=http://localhost:9200
-SETUP_PATH=dev/docker/setup_indexing/Dockerfile
+SETUP_PATH=docker/setup_indexing/Dockerfile
 SETUP_IMG=setup_indexing
 
 all: ensure package_arch_extractor package_rss_extractor
@@ -85,9 +85,6 @@ package_arch_extractor:
 		-t ${GO_PACKAGE_ARCH}:$(VERSION_MAJOR) \
 		--load \
 		.
-
-package_weekly_stats:
-	docker build -f ./dev/docker/stats/Dockerfile -t fahy.xyz/xcontest-weekly-stats:${VERSION_MAJOR} .
 
 test:
 	$(GOTEST) ./...
