@@ -23,46 +23,54 @@ cat << EOF | curl -sX POST "$es_cluster_url/flight/_search?pretty=true" -o /outp
 {
   "size": 0,
   "aggs": {
-    "statistics_weekly": {
+    "statistics_yearly": {
       "date_histogram": {
         "field": "flight_date",
-        "calendar_interval": "week"
+        "calendar_interval": "year"
       },
       "aggs": {
-        "group_by_country": {
-          "terms": {
-            "field": "country_code"
+        "statistics_weekly": {
+          "date_histogram": {
+            "field": "flight_date",
+            "calendar_interval": "week"
           },
           "aggs": {
-            "distance_avg": {
-              "avg": {
-                "field": "distance"
-              }
-            },
-            "distance_med": {
-              "median_absolute_deviation": {
-                "field": "distance"
-              }
-            },
-            "count_above_50km": {
-              "filter": {
-                "range": { "distance": { "gte": "50" }}
+            "group_by_country": {
+              "terms": {
+                "field": "country_code"
+              },
+              "aggs": {
+                "distance_avg": {
+                  "avg": {
+                    "field": "distance"
+                  }
+                },
+                "distance_med": {
+                  "median_absolute_deviation": {
+                    "field": "distance"
+                  }
+                },
+                "count_above_50km": {
+                  "filter": {
+                    "range": { "distance": { "gte": "50" }}
 
-              }
-            },
-            "count_above_100km": {
-              "filter": {
-                "range": { "distance": { "gte": "100" }}
-              }
-            },
-            "count_above_150km": {
-              "filter": {
-                "range": { "distance": { "gte": "150" }}
-              }
-            },
-            "count_above_200km": {
-              "filter": {
-                "range": { "distance": { "gte": "200" }}
+                  }
+                },
+                "count_above_100km": {
+                  "filter": {
+                    "range": { "distance": { "gte": "100" }}
+                  }
+                },
+                "count_above_150km": {
+                  "filter": {
+                    "range": { "distance": { "gte": "150" }}
+                  }
+                },
+                "count_above_200km": {
+                  "filter": {
+                    "range": { "distance": { "gte": "200" }}
+                  }
+                }
               }
             }
           }
