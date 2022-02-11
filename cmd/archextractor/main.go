@@ -14,6 +14,7 @@ import (
 	"fahy.xyz/xcontestextractor/elastic"
 	"fahy.xyz/xcontestextractor/metrics"
 	"fahy.xyz/xcontestextractor/parser"
+	browser "github.com/EDDYCJY/fake-useragent"
 	"github.com/chromedp/chromedp"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/sqooba/go-common/logging"
@@ -47,6 +48,11 @@ type envConfig struct {
 	Url string `envconfig:"URL"`
 	// Start of the extraction (part of the url [start]=)
 	StartFlightNumber int `envconfig:"START_FLIGHT_NUMBER"`
+	// Timeouts and number of retries for chromedp
+	TimeoutSeconds  int `envconfig:"TIMEOUT_SECONDS" default:"60"`
+	NumberOfRetries int `envconfig:"NUMBER_OF_RETRIES" default:"5"`
+	// Interval between run to avoid doing too many requests
+	IntervalMin int `envconfig:"RUN_INTERVAL_MINUTES" default:"2"`
 }
 
 // Entry represents a flight.
@@ -59,13 +65,14 @@ type Entry struct {
 }
 
 // getFlights retrieves the files from a html pages.
-func getFlights(url string) (string, error) {
+func getFlights(url string, timeoutSecond int) (string, error) {
 	const sel = "html body div#page.sect-cpp div#page-inner div#main-box div.in1 div#content-and-context div#content div.under-bar div#flights.XContest table.XClist tbody"
 
 	opts := []chromedp.ExecAllocatorOption{
 		chromedp.NoFirstRun,
 		chromedp.NoDefaultBrowserCheck,
 		chromedp.Headless,
+		chromedp.UserAgent(browser.Random()),
 		chromedp.DisableGPU,
 		chromedp.ExecPath("/headless-shell/headless-shell"),
 	}
@@ -79,13 +86,14 @@ func getFlights(url string) (string, error) {
 	)
 	defer chromeCancel()
 
-	timeoutCtx, timeoutCancel := context.WithTimeout(chromeCtx, 3*time.Minute)
+	timeoutCtx, timeoutCancel := context.WithTimeout(chromeCtx, time.Duration(timeoutSecond)*time.Second)
 	defer timeoutCancel()
 
 	var res string
 
 	err := chromedp.Run(timeoutCtx,
 		chromedp.Navigate(url),
+		chromedp.WaitVisible("table.XClist"),
 		chromedp.OuterHTML(sel, &res, chromedp.BySearch),
 	)
 	if err != nil {
@@ -138,18 +146,29 @@ func main() {
 
 	flightNumber := env.StartFlightNumber
 
+	retry := 0
+
 	// Process all the pages until there is no more flight.
 	for {
 		metrics.RunsTotal.Inc()
 		url := env.Url + strconv.Itoa(flightNumber)
 		log.Infof("Extracting: %s", url)
 
-		data, _ := getFlights(url)
+		data, _ := getFlights(url, env.TimeoutSeconds)
 		metrics.HttpRequestsTotal.Inc()
+		// If the page is empty, retry ten times before quitting.
 		if strings.TrimSpace(data) == "" {
 			log.Infof("No more flight to insert (flight number=%d)", flightNumber)
+			metrics.ErrorsTotal.Inc()
+			if retry < env.NumberOfRetries {
+				retry++
+				continue
+			}
 			break
 		}
+		// Reset the retry counter if we get a non-empty page.
+		retry = 0
+
 		var entry Entry
 
 		tokenizer := html.NewTokenizer(strings.NewReader(data))
@@ -230,7 +249,8 @@ func main() {
 						date, err := parser.ParseDate(split[len(split)-2])
 						if err != nil {
 							metrics.ErrorsTotal.Inc()
-							log.Fatalf("Error converting the date flight: %v", err)
+							log.Errorf("Error converting the date flight of %s: %v", entry.Link, err)
+							continue
 						}
 						entry.FlightDate = date.UnixMilli()
 					}
@@ -247,7 +267,8 @@ func main() {
 						distance, err := strconv.ParseFloat(string(tokenizer.Text()), 64)
 						if err != nil {
 							metrics.ErrorsTotal.Inc()
-							log.Fatalf("Error converting distance flight to float: %v", err)
+							log.Errorf("Error converting distance flight to float of %s: %v", entry.Link, err)
+							continue
 						}
 						entry.Distance = distance
 					}
@@ -255,6 +276,7 @@ func main() {
 			}
 		}
 		flightNumber += flightsByPage
+		time.Sleep(time.Duration(env.IntervalMin) * time.Minute)
 	}
 
 	log.Info("Flights successfully imported.")

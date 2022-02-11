@@ -3,6 +3,7 @@ module fahy.xyz/xcontestextractor
 go 1.17
 
 require (
+	github.com/EDDYCJY/fake-useragent v0.2.0
 	github.com/PuerkitoBio/goquery v1.8.0
 	github.com/chromedp/chromedp v0.7.6
 	github.com/elastic/go-elasticsearch/v8 v8.0.0-20211104170603-75263a5e99d2
