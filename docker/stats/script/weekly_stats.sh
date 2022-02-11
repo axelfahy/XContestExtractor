@@ -19,7 +19,7 @@ mkdir -p "$destination"
 echo "Starting weekly statistics..."
 
 # Set the index template for flights data
-cat << EOF | curl -sX POST "$es_cluster_url/flight/_search?pretty=true" -o /output/weekly_stats.json -H "Content-type: application/json" -d @-
+cat << EOF | curl -sX POST "$es_cluster_url/flight/_search?pretty=true" -o /output/weekly_stats.raw.json -H "Content-type: application/json" -d @-
 {
   "size": 0,
   "aggs": {
