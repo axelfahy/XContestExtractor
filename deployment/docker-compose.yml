@@ -17,7 +17,7 @@ services:
   # Access api endpoint at http://localhost:9200
   elasticsearch:
     container_name: elasticsearch
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.15.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.0.0
     ports:
       - 9200:9200
     networks:
@@ -31,6 +31,7 @@ services:
       - cluster.routing.allocation.disk.watermark.low=65%
       - cluster.routing.allocation.disk.watermark.high=70%
       - xpack.security.enabled=false
+      - xpack.security.enrollment.enabled=true
       - xpack.security.audit.enabled=true
       - xpack.ml.enabled=false
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
@@ -41,7 +42,7 @@ services:
   # Access Kibana at http://localhost:5601
   kibana:
     container_name: kibana
-    image: docker.elastic.co/kibana/kibana:7.15.0
+    image: docker.elastic.co/kibana/kibana:8.0.0
     ports:
       - 5601:5601
     networks:
@@ -51,8 +52,8 @@ services:
     depends_on:
       - elasticsearch
     environment:
-      - ELASTICSEARCH_URL=http://elasticsearch:9200
-      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=kibana
       - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
     restart: unless-stopped
 
