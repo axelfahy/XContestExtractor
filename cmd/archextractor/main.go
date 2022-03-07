@@ -7,6 +7,7 @@ import (
 	"golang.org/x/net/html"
 	"io"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -47,12 +48,14 @@ type envConfig struct {
 	// URL to extract
 	Url string `envconfig:"URL"`
 	// Start of the extraction (part of the url [start]=)
-	StartFlightNumber int `envconfig:"START_FLIGHT_NUMBER"`
+	StartFlightNumber    int  `envconfig:"START_FLIGHT_NUMBER"` // Only used if `LOAD_LAST_FLIGHT_NUMBER` is false.
+	LoadLastFlightNumber bool `envconfig:"LOAD_LAST_FLIGHT_NUMBER" default:"true"`
 	// Timeouts and number of retries for chromedp
 	TimeoutSeconds  int `envconfig:"TIMEOUT_SECONDS" default:"60"`
 	NumberOfRetries int `envconfig:"NUMBER_OF_RETRIES" default:"5"`
 	// Interval between run to avoid doing too many requests
-	IntervalMin int `envconfig:"RUN_INTERVAL_MINUTES" default:"2"`
+	IntervalMin int    `envconfig:"RUN_INTERVAL_MINUTES" default:"2"`
+	LogPath     string `envconfig:"LOG_PATH" default:"./logs/archextractor"`
 }
 
 // Entry represents a flight.
@@ -147,7 +150,26 @@ func main() {
 		log.Fatalf("Error creating the ES client: %v", err)
 	}
 
-	flightNumber := env.StartFlightNumber
+	// Extract year from url.
+	re := regexp.MustCompile(`[0-9]{4}`)
+	match := re.FindString(env.Url)
+	year, err := strconv.Atoi(match)
+	if err != nil {
+		log.Fatalf("Error extracting the year from the url: %v", err)
+	}
+	log.Infof("Processing year %d", year)
+
+	// Extract the last flight number processed.
+	flightNumber := 0
+	if env.LoadLastFlightNumber {
+		flightNumber, err = manager.GetLastFlightNumber(year)
+		if err != nil {
+			log.Fatalf("Error extracting the last flight number: %v", err)
+		}
+	} else {
+		flightNumber = env.StartFlightNumber
+	}
+	log.Infof("Last flight number: %d", flightNumber)
 
 	retry := 0
 
@@ -279,6 +301,10 @@ func main() {
 			}
 		}
 		flightNumber += flightsByPage
+		if err = manager.SetLastFlightNumber(year, flightNumber); err != nil {
+			metrics.ErrorsTotal.Inc()
+			log.Errorf("Error while setting the last flight number: %v", err)
+		}
 		time.Sleep(time.Duration(env.IntervalMin) * time.Minute)
 	}
 
