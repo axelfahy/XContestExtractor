@@ -127,12 +127,16 @@ func main() {
 			metrics.RunsTotal.Inc()
 
 			// Initialization of the ElasticSearch client.
-			manager := elastic.NewElasticManager(
+			manager, err := elastic.NewElasticManager(
 				env.ElasticEndpoint,
 				env.ElasticUser,
 				env.ElasticPassword,
 				indexName,
 			)
+			if err != nil {
+				log.Errorf("Error creating the ES client: %v", err)
+				continue
+			}
 
 			// Read the RSS feed.
 			resp, err := http.Get(url)

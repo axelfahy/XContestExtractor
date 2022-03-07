@@ -137,12 +137,15 @@ func main() {
 	}()
 
 	// Initialization of the ElasticSearch client.
-	manager := elastic.NewElasticManager(
+	manager, err := elastic.NewElasticManager(
 		env.ElasticEndpoint,
 		env.ElasticUser,
 		env.ElasticPassword,
 		indexName,
 	)
+	if err != nil {
+		log.Fatalf("Error creating the ES client: %v", err)
+	}
 
 	flightNumber := env.StartFlightNumber
 
