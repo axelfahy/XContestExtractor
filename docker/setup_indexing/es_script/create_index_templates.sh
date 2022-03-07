@@ -33,7 +33,7 @@ echo "Creating index templates..."
 
 template="flight"
 echo "Add component template with the mappings of the fields for ${template}"
-cat << EOF | curl -sX PUT "$es_cluster_url/_component_template/${template}-mappings" -H "Content-type: application/json" -d @-
+cat << EOF | curl -sX PUT "${es_cluster_url}/_component_template/${template}-mappings" -H "Content-type: application/json" -d @-
 {
   "template": {
     "settings": {
@@ -91,7 +91,7 @@ EOF
 check_execution "${template}-mappings" $?
 
 echo "Add lifecycle policy for ${template} with a maximal size of ${max_size}"
-cat << EOF | curl -sX PUT "$es_cluster_url/_ilm/policy/${template}-ilm-policy" -H "Content-type: application/json" -d @-
+cat << EOF | curl -sX PUT "${es_cluster_url}/_ilm/policy/${template}-ilm-policy" -H "Content-type: application/json" -d @-
 {
   "policy": {
     "phases": {
@@ -112,7 +112,7 @@ EOF
 check_execution "${template}-ilm-policy" $?
 
 echo "Add component template with lifecycle policy for ${template}"
-cat << EOF | curl -sX PUT "$es_cluster_url/_component_template/${template}-ilm-settings" -H "Content-type: application/json" -d @-
+cat << EOF | curl -sX PUT "${es_cluster_url}/_component_template/${template}-ilm-settings" -H "Content-type: application/json" -d @-
 {
   "template": {
     "settings": {
@@ -128,7 +128,7 @@ EOF
 check_execution "${template}-ilm-settings" $?
 
 echo "Add index template with previously created component templates"
-cat << EOF | curl -sX PUT "$es_cluster_url/_index_template/${template}" -H "Content-type: application/json" -d @-
+cat << EOF | curl -sX PUT "${es_cluster_url}/_index_template/${template}" -H "Content-type: application/json" -d @-
 {
   "index_patterns": [
     "${template}*"
@@ -147,8 +147,9 @@ cat << EOF | curl -sX PUT "$es_cluster_url/_index_template/${template}" -H "Cont
 EOF
 check_execution $template $?
 
-echo "Add first index as write index with the correct alias"
-cat << EOF | curl -sX PUT "$es_cluster_url/${template}-000001" -H "Content-type: application/json" -d @-
+if [[ $(curl -s -o /dev/null -w "%{http_code}" "${es_cluster_url}/${template}-000001") -eq 404 ]]; then
+  echo "Add first index as write index with the correct alias"
+  cat << EOF | curl -sX PUT "${es_cluster_url}/${template}-000001" -H "Content-type: application/json" -d @-
 {
   "aliases": {
     "$template": {
@@ -157,4 +158,41 @@ cat << EOF | curl -sX PUT "$es_cluster_url/${template}-000001" -H "Content-type:
   }
 }
 EOF
-check_execution "${template}-00001" $?
+  check_execution "${template}-00001" $?
+else
+  echo "Index ${template}-000001 already exists, skipping."
+fi
+
+echo "Add index template to store the states"
+download_template="download-state"
+cat << EOF | curl -sX PUT "${es_cluster_url}/_index_template/${download_template}" -H "Content-type: application/json" -d @-
+{
+  "index_patterns": [
+    "download-state*"
+  ],
+  "template": {
+    "settings": {
+      "number_of_shards": 1
+    },
+    "mappings": {
+      "properties": {
+        "year": {
+          "type": "integer"
+        },
+        "last_flight_number": {
+          "type": "integer"
+        }
+      }
+    }
+  }
+}
+EOF
+check_execution "${download_template}" $?
+
+if [[ $(curl -s -o /dev/null -w "%{http_code}" "${es_cluster_url}/${download_template}") -eq 404 ]]; then
+  echo "Create index ${download_template}"
+  curl -sX PUT "$es_cluster_url/${download_template}"
+  check_execution "${download_template}" $?
+else
+  echo "Index ${download_template} already exists, skipping."
+fi
