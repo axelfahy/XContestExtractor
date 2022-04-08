@@ -20,3 +20,8 @@ XContest Extractor
 
 - Upgrade elasticsearch and kibana to version 8.0.0
 - Save the last processed flight in elasticsearch
+
+# Version v1.1.2 -- 08.04.2022
+
+- Upgrade elasticsearch and kibana to version 8.1.2
+
