@@ -69,7 +69,6 @@ func ExtractFlights(body []byte) (*XContestEntry, error) {
 	data := &XContestEntry{}
 	err := xml.Unmarshal(body, data)
 	if err != nil {
-		log.Errorf("Error unmarshaling the xml data: %v", err)
 		return nil, err
 	}
 	return data, nil
@@ -134,6 +133,7 @@ func main() {
 				indexName,
 			)
 			if err != nil {
+				metrics.ErrorsTotal.Inc()
 				log.Errorf("Error creating the ES client: %v", err)
 				continue
 			}
@@ -157,16 +157,25 @@ func main() {
 			flights, err := ExtractFlights(body)
 			if err != nil {
 				metrics.ErrorsTotal.Inc()
-				log.Fatalf("Error extracting flights from XML: %v", err)
+		        log.Fatalf("Error unmarshaling the XML data of body: %s, err = %v", body, err)
 			}
 			numInsertion := 0
 			// Insert each flight into ES.
 			for i, entry := range flights.Channel.Items {
 				log.Debugf("Processing flight  : %s (%d / %d)", entry, i, len(flights.Channel.Items))
 
-				fullName := regexFullName.FindStringSubmatch(entry.Title)[1]
+				fullName, err := parser.ExtractMatch(entry.Title, regexFullName)
+				if err != nil {
+					metrics.ErrorsTotal.Inc()
+		            log.Fatalf("Error getting full name from title %s: %v", entry.Title, err)
+				}
 				log.Debugf("Full name          : %s", fullName)
-				distance, err := strconv.ParseFloat(regexDistance.FindStringSubmatch(entry.Title)[1], 64)
+				distanceMatch, err := parser.ExtractMatch(entry.Title, regexDistance)
+				if err != nil {
+					metrics.ErrorsTotal.Inc()
+		            log.Fatalf("Error getting distance from title %s: %v", entry.Title, err)
+				}
+				distance, err := strconv.ParseFloat(distanceMatch, 64)
 				if err != nil {
 					metrics.ErrorsTotal.Inc()
 					log.Fatalf("Error converting distance flight to float: %v", err)
@@ -189,6 +198,7 @@ func main() {
 					log.Info("Flight already exists, skipping.")
 					metrics.DuplicatesTotal.Inc()
 				} else {
+				    log.Infof("Processing url %s", entry.Link)
 					flight, err := parser.GetFlightInfo(entry.Link, source)
 					metrics.HttpRequestsTotal.Inc()
 					if err != nil {
@@ -205,11 +215,15 @@ func main() {
 					flight.FullName = fullName
 					flight.FlightDate = date.UnixMilli()
 					flight.Distance = distance
-					flight.FlightType = regexFlightType.FindStringSubmatch(entry.Title)[1]
+                    flightType, err := parser.ExtractMatch(entry.Title, regexFlightType)
+                    if err != nil {
+                        metrics.ErrorsTotal.Inc()
+                        log.Fatalf("Error getting flight type from title %s: %v", entry.Title, err)
+                    }
+					log.Debugf("Flight type        : %s", flight.FlightType)
+					flight.FlightType = flightType
 					flight.PublicationDate = publicationDate.UnixMilli()
 					flight.Url = entry.Link
-
-					log.Debugf("Flight type        : %s", flight.FlightType)
 					log.Debugf("Url                : %s", flight.Url)
 
 					err = manager.InsertFlight(flight)

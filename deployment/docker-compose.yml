@@ -35,8 +35,8 @@ services:
       - xpack.security.audit.enabled=true
       - xpack.ml.enabled=false
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
-      - "ES_HEAP_SIZE=700m"
-      - "ES_JAVA_OPTS=-Xms1500m -Xmx1500m"
+      - "ES_HEAP_SIZE=600m"
+      - "ES_JAVA_OPTS=-Xms1024m -Xmx1024m"
     restart: unless-stopped
 
   # Access Kibana at http://localhost:5601
@@ -59,12 +59,12 @@ services:
 
   # RSS extractor
   xcontest-rss-extractor:
-    image: fahy.xyz/xcontest-rss-extractor:v1
+    image: fahy.xyz/xcontest-rss-extractor:v1.1.4
     environment:
       - ELASTICSEARCH_URL=http://elasticsearch:9200
       - ELASTICSEARCH_USERNAME=elastic
       - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
-      - RUN_INTERVAL_MINUTES=2
+      - RUN_INTERVAL_MINUTES=1
       - LOG_LEVEL=info
       - PORT=9095
     ports:
@@ -524,9 +524,9 @@ services:
       - elasticsearch
     restart: "no"
 
-   Weekly stats
+  # Weekly stats
   weekly-stats:
-    image: fahy.xyz/xcontest-weekly-stats:v1
+    image: fahy.xyz/xcontest-weekly-stats:v1.1.0
     environment:
       - ES_CLUSTER_URL=http://elasticsearch:9200
     networks:
