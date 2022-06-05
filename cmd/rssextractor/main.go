@@ -113,6 +113,14 @@ func main() {
 		log.Fatal(s.ListenAndServe())
 	}()
 
+    // Initialization of the ElasticSearch client.
+    manager, err := elastic.NewElasticManager(
+        env.ElasticEndpoint,
+        env.ElasticUser,
+        env.ElasticPassword,
+        indexName,
+    )
+
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
 
@@ -125,13 +133,6 @@ func main() {
 			log.Infof("Running extractor at %v", t)
 			metrics.RunsTotal.Inc()
 
-			// Initialization of the ElasticSearch client.
-			manager, err := elastic.NewElasticManager(
-				env.ElasticEndpoint,
-				env.ElasticUser,
-				env.ElasticPassword,
-				indexName,
-			)
 			if err != nil {
 				metrics.ErrorsTotal.Inc()
 				log.Errorf("Error creating the ES client: %v", err)
@@ -167,25 +168,29 @@ func main() {
 				fullName, err := parser.ExtractMatch(entry.Title, regexFullName)
 				if err != nil {
 					metrics.ErrorsTotal.Inc()
-		            log.Fatalf("Error getting full name from title %s: %v", entry.Title, err)
+		            log.Errorf("Error getting full name from title %s: %v", entry.Title, err)
+		            continue
 				}
 				log.Debugf("Full name          : %s", fullName)
 				distanceMatch, err := parser.ExtractMatch(entry.Title, regexDistance)
 				if err != nil {
 					metrics.ErrorsTotal.Inc()
-		            log.Fatalf("Error getting distance from title %s: %v", entry.Title, err)
+		            log.Errorf("Error getting distance from title %s: %v", entry.Title, err)
+		            continue
 				}
 				distance, err := strconv.ParseFloat(distanceMatch, 64)
 				if err != nil {
 					metrics.ErrorsTotal.Inc()
-					log.Fatalf("Error converting distance flight to float: %v", err)
+					log.Errorf("Error converting distance flight to float: %v", err)
+					continue
 				}
 				log.Debugf("Distance           : %f", distance)
 
 				date, err := time.Parse(flightDateLayout, strings.Split(entry.Title, " ")[0])
 				if err != nil {
 					metrics.ErrorsTotal.Inc()
-					log.Fatalf("Error converting date flight to timestamp: %v", err)
+					log.Errorf("Error converting date flight to timestamp: %v", err)
+					continue
 				}
 				log.Debugf("Date               : %s", date)
 
@@ -193,6 +198,7 @@ func main() {
 				if err != nil {
 					metrics.ErrorsTotal.Inc()
 					log.Errorf("Error searching if the flight exists: %v", err)
+					continue
 				}
 				if flightExists {
 					log.Info("Flight already exists, skipping.")
@@ -204,11 +210,13 @@ func main() {
 					if err != nil {
 						metrics.ErrorsTotal.Inc()
 						log.Errorf("Error getting flight information: %v", err)
+						continue
 					}
 					publicationDate, err := time.Parse(pubDateLayout, entry.PubDate)
 					if err != nil {
 						metrics.ErrorsTotal.Inc()
-						log.Fatalf("Error converting publication date to timestamp: %v", err)
+						log.Errorf("Error converting publication date to timestamp: %v", err)
+						continue
 					}
 					log.Debugf("Publication date   : %s", publicationDate)
 
@@ -218,7 +226,8 @@ func main() {
                     flightType, err := parser.ExtractMatch(entry.Title, regexFlightType)
                     if err != nil {
                         metrics.ErrorsTotal.Inc()
-                        log.Fatalf("Error getting flight type from title %s: %v", entry.Title, err)
+                        log.Errorf("Error getting flight type from title %s: %v", entry.Title, err)
+                        continue
                     }
 					log.Debugf("Flight type        : %s", flight.FlightType)
 					flight.FlightType = flightType
@@ -231,7 +240,8 @@ func main() {
 					numInsertion++
 					if err != nil {
 						metrics.ErrorsTotal.Inc()
-						log.Fatalf("Error indexing flight into ElasticSearch: %v", err)
+						log.Errorf("Error indexing flight into ElasticSearch: %v", err)
+						continue
 					}
 				}
 			}

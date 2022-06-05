@@ -59,7 +59,7 @@ services:
 
   # RSS extractor
   xcontest-rss-extractor:
-    image: fahy.xyz/xcontest-rss-extractor:v1.1.4
+    image: fahy.xyz/xcontest-rss-extractor:v1.1.5
     environment:
       - ELASTICSEARCH_URL=http://elasticsearch:9200
       - ELASTICSEARCH_USERNAME=elastic
