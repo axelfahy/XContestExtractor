@@ -25,3 +25,11 @@ XContest Extractor
 
 - Upgrade elasticsearch and kibana to version 8.1.2
 - Add logs and fix parsing errors
+ 
+# Version v1.1.4 -- 07.05.2022
+
+- Improve handling of parsing errors
+
+# Version v1.1.5 -- 05.06.2022
+
+- Switch parsing errors from fatal to error level to record error count in metrics

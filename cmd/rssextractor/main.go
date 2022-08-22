@@ -113,13 +113,13 @@ func main() {
 		log.Fatal(s.ListenAndServe())
 	}()
 
-    // Initialization of the ElasticSearch client.
-    manager, err := elastic.NewElasticManager(
-        env.ElasticEndpoint,
-        env.ElasticUser,
-        env.ElasticPassword,
-        indexName,
-    )
+	// Initialization of the ElasticSearch client.
+	manager, err := elastic.NewElasticManager(
+		env.ElasticEndpoint,
+		env.ElasticUser,
+		env.ElasticPassword,
+		indexName,
+	)
 
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
@@ -151,14 +151,16 @@ func main() {
 			body, err := io.ReadAll(resp.Body)
 			if err != nil {
 				metrics.ErrorsTotal.Inc()
-				log.Fatalf("Error reading the body: %v", err)
+				log.Errorf("Error reading the body: %v", err)
+				continue
 			}
 
 			// Extract the flights.
 			flights, err := ExtractFlights(body)
 			if err != nil {
 				metrics.ErrorsTotal.Inc()
-		        log.Fatalf("Error unmarshaling the XML data of body: %s, err = %v", body, err)
+				log.Errorf("Error unmarshaling the XML data of body: %s, err = %v", body, err)
+				continue
 			}
 			numInsertion := 0
 			// Insert each flight into ES.
@@ -168,15 +170,15 @@ func main() {
 				fullName, err := parser.ExtractMatch(entry.Title, regexFullName)
 				if err != nil {
 					metrics.ErrorsTotal.Inc()
-		            log.Errorf("Error getting full name from title %s: %v", entry.Title, err)
-		            continue
+					log.Errorf("Error getting full name from title %s: %v", entry.Title, err)
+					continue
 				}
 				log.Debugf("Full name          : %s", fullName)
 				distanceMatch, err := parser.ExtractMatch(entry.Title, regexDistance)
 				if err != nil {
 					metrics.ErrorsTotal.Inc()
-		            log.Errorf("Error getting distance from title %s: %v", entry.Title, err)
-		            continue
+					log.Errorf("Error getting distance from title %s: %v", entry.Title, err)
+					continue
 				}
 				distance, err := strconv.ParseFloat(distanceMatch, 64)
 				if err != nil {
@@ -204,7 +206,7 @@ func main() {
 					log.Info("Flight already exists, skipping.")
 					metrics.DuplicatesTotal.Inc()
 				} else {
-				    log.Infof("Processing url %s", entry.Link)
+					log.Infof("Processing url %s", entry.Link)
 					flight, err := parser.GetFlightInfo(entry.Link, source)
 					metrics.HttpRequestsTotal.Inc()
 					if err != nil {
@@ -223,12 +225,12 @@ func main() {
 					flight.FullName = fullName
 					flight.FlightDate = date.UnixMilli()
 					flight.Distance = distance
-                    flightType, err := parser.ExtractMatch(entry.Title, regexFlightType)
-                    if err != nil {
-                        metrics.ErrorsTotal.Inc()
-                        log.Errorf("Error getting flight type from title %s: %v", entry.Title, err)
-                        continue
-                    }
+					flightType, err := parser.ExtractMatch(entry.Title, regexFlightType)
+					if err != nil {
+						metrics.ErrorsTotal.Inc()
+						log.Errorf("Error getting flight type from title %s: %v", entry.Title, err)
+						continue
+					}
 					log.Debugf("Flight type        : %s", flight.FlightType)
 					flight.FlightType = flightType
 					flight.PublicationDate = publicationDate.UnixMilli()
