@@ -8,6 +8,28 @@ from loguru import logger
 from pathlib import Path
 
 
+def extract_countries(data: dict) -> list:
+    """
+    Extract complete list of countries from data.
+
+    Parameters
+    ----------
+    data : dict
+        Dictionnary with all the data.
+
+    Returns
+    -------
+    list
+        List of unique countries, sorted.
+    """
+    countries = set()
+    for years in data["aggregations"]["statistics_yearly"]["buckets"]:
+        for weeks in years["statistics_weekly"]["buckets"]:
+            for country in weeks["group_by_country"]["buckets"]:
+                countries.add(country["key"])
+    return sorted(countries)
+
+
 @click.command()
 @click.argument('filename', type=click.Path(exists=True))
 @click.argument('output', type=click.Path(exists=False))
@@ -24,12 +46,11 @@ def main(filename: Path, output: Path):
         data = {}
         for years in raw_data["aggregations"]["statistics_yearly"]["buckets"]:
             year = datetime.fromtimestamp(years['key'] // 1000, timezone.utc).year
-            data[year] = {}
+            data[year] = {c: {} for c in extract_countries(raw_data)}
             for weeks in years["statistics_weekly"]["buckets"]:
                 week_number = datetime.fromtimestamp(weeks['key'] // 1000, timezone.utc).isocalendar()[1]
-                data[year][week_number] = {}
                 for country in weeks["group_by_country"]["buckets"]:
-                    data[year][week_number][country["key"]] = {
+                    data[year][country["key"]][week_number] = {
                         "distance_avg": country["distance_avg"]["value"],
                         "distance_med": country["distance_med"]["value"],
                         "count_above_50km": country["count_above_50km"]["doc_count"],

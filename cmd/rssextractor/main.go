@@ -242,8 +242,7 @@ func main() {
 					numInsertion++
 					if err != nil {
 						metrics.ErrorsTotal.Inc()
-						log.Errorf("Error indexing flight into ElasticSearch: %v", err)
-						continue
+						log.Fatalf("Error indexing flight into ElasticSearch: %v", err)
 					}
 				}
 			}
