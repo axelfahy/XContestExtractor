@@ -10,6 +10,7 @@ require (
 	github.com/jarcoal/httpmock v1.0.8
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/mottaquikarim/esquerydsl v0.0.0-20210809035756-5080f1570121
+	github.com/procyon-projects/chrono v1.1.2
 	github.com/prometheus/client_golang v1.11.0
 	github.com/sqooba/go-common v0.0.0-20211129172903-8db1606d458e
 	golang.org/x/net v0.0.0-20210916014120-12bc252f5db8

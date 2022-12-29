@@ -59,12 +59,12 @@ services:
 
   # RSS extractor
   xcontest-rss-extractor:
-    image: fahy.xyz/xcontest-rss-extractor:v1.1.8
+    image: fahy.xyz/xcontest-rss-extractor:v1.2.0
     environment:
       - ELASTICSEARCH_URL=http://elasticsearch:9200
       - ELASTICSEARCH_USERNAME=elastic
       - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
-      - RUN_INTERVAL_MINUTES=1
+      - RUN_INTERVAL=1m
       - LOG_LEVEL=info
       - PORT=9095
     ports:
@@ -79,450 +79,450 @@ services:
     restart: unless-stopped
 
   # Archive extractor - 2007
-  #xcontest-arch-extractor-2007:
-  #  container_name: xcontest-arch-extractor-2007
-  #  image: fahy.xyz/xcontest-arch-extractor:v1
-  #  environment:
-  #    - ELASTICSEARCH_URL=http://elasticsearch:9200
-  #    - ELASTICSEARCH_USERNAME=elastic
-  #    - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
-  #    - LOG_LEVEL=debug
-  #    - PORT=9096
-  #    - URL=https://www.xcontest.org/2007/world/en/flights/#flights[start]=
-  #    - START_FLIGHT_NUMBER=6800
-  #    - LOAD_LAST_FLIGHT_NUMBER=true
-  #    - TIMEOUT_SECONDS=420
-  #    - NUMBER_OF_RETRIES=50
-  #    - RUN_INTERVAL_MINUTES=2
-  #  ports:
-  #    - 9096:9096
-  #  networks:
-  #    - monitoring
-  #  labels:
-  #    - "prometheus.io/scrape=true"
-  #    - "prometheus.io/port=9096"
-  #    - "prometheus.io/extra-labels=app:xcontest-arch-2007"
-  #  depends_on:
-  #    - elasticsearch
-  #  restart: "no"
+  xcontest-arch-extractor-2007:
+    container_name: xcontest-arch-extractor-2007
+    image: fahy.xyz/xcontest-arch-extractor:v1
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+      - LOG_LEVEL=debug
+      - PORT=9096
+      - URL=https://www.xcontest.org/2007/world/en/flights/#flights[start]=
+      - START_FLIGHT_NUMBER=6800
+      - LOAD_LAST_FLIGHT_NUMBER=true
+      - TIMEOUT_SECONDS=420
+      - NUMBER_OF_RETRIES=50
+      - RUN_INTERVAL_MINUTES=2
+    ports:
+      - 9096:9096
+    networks:
+      - monitoring
+    labels:
+      - "prometheus.io/scrape=true"
+      - "prometheus.io/port=9096"
+      - "prometheus.io/extra-labels=app:xcontest-arch-2007"
+    depends_on:
+      - elasticsearch
+    restart: "no"
 
   # Archive extractor - 2008
-  #xcontest-arch-extractor-2008:
-  #  container_name: xcontest-arch-extractor-2008
-  #  image: fahy.xyz/xcontest-arch-extractor:v1
-  #  environment:
-  #    - ELASTICSEARCH_URL=http://elasticsearch:9200
-  #    - ELASTICSEARCH_USERNAME=elastic
-  #    - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
-  #    - LOG_LEVEL=debug
-  #    - PORT=9097
-  #    - URL=https://www.xcontest.org/2008/world/en/flights/#flights[start]=
-  #    - START_FLIGHT_NUMBER=4800
-  #    - LOAD_LAST_FLIGHT_NUMBER=true
-  #    - TIMEOUT_SECONDS=420
-  #    - NUMBER_OF_RETRIES=50
-  #    - RUN_INTERVAL_MINUTES=2
-  #  ports:
-  #    - 9097:9097
-  #  networks:
-  #    - monitoring
-  #  labels:
-  #    - "prometheus.io/scrape=true"
-  #    - "prometheus.io/port=9097"
-  #    - "prometheus.io/extra-labels=app:xcontest-arch-2008"
-  #  depends_on:
-  #    - elasticsearch
-  #  restart: "no"
+  xcontest-arch-extractor-2008:
+    container_name: xcontest-arch-extractor-2008
+    image: fahy.xyz/xcontest-arch-extractor:v1
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+      - LOG_LEVEL=debug
+      - PORT=9097
+      - URL=https://www.xcontest.org/2008/world/en/flights/#flights[start]=
+      - START_FLIGHT_NUMBER=4800
+      - LOAD_LAST_FLIGHT_NUMBER=true
+      - TIMEOUT_SECONDS=420
+      - NUMBER_OF_RETRIES=50
+      - RUN_INTERVAL_MINUTES=2
+    ports:
+      - 9097:9097
+    networks:
+      - monitoring
+    labels:
+      - "prometheus.io/scrape=true"
+      - "prometheus.io/port=9097"
+      - "prometheus.io/extra-labels=app:xcontest-arch-2008"
+    depends_on:
+      - elasticsearch
+    restart: "no"
 
   # Archive extractor - 2009
-  #xcontest-arch-extractor-2009:
-  #  container_name: xcontest-arch-extractor-2009
-  #  image: fahy.xyz/xcontest-arch-extractor:v1
-  #  environment:
-  #    - ELASTICSEARCH_URL=http://elasticsearch:9200
-  #    - ELASTICSEARCH_USERNAME=elastic
-  #    - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
-  #    - LOG_LEVEL=debug
-  #    - PORT=9098
-  #    - URL=https://www.xcontest.org/2009/world/en/flights/#flights[start]=
-  #    - START_FLIGHT_NUMBER=24300
-  #    - LOAD_LAST_FLIGHT_NUMBER=true
-  #    - TIMEOUT_SECONDS=420
-  #    - NUMBER_OF_RETRIES=50
-  #    - RUN_INTERVAL_MINUTES=2
-  #  ports:
-  #    - 9098:9098
-  #  networks:
-  #    - monitoring
-  #  labels:
-  #    - "prometheus.io/scrape=true"
-  #    - "prometheus.io/port=9098"
-  #    - "prometheus.io/extra-labels=app:xcontest-arch-2009"
-  #  depends_on:
-  #    - elasticsearch
-  #  restart: "no"
+  xcontest-arch-extractor-2009:
+    container_name: xcontest-arch-extractor-2009
+    image: fahy.xyz/xcontest-arch-extractor:v1
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+      - LOG_LEVEL=debug
+      - PORT=9098
+      - URL=https://www.xcontest.org/2009/world/en/flights/#flights[start]=
+      - START_FLIGHT_NUMBER=24300
+      - LOAD_LAST_FLIGHT_NUMBER=true
+      - TIMEOUT_SECONDS=420
+      - NUMBER_OF_RETRIES=50
+      - RUN_INTERVAL_MINUTES=2
+    ports:
+      - 9098:9098
+    networks:
+      - monitoring
+    labels:
+      - "prometheus.io/scrape=true"
+      - "prometheus.io/port=9098"
+      - "prometheus.io/extra-labels=app:xcontest-arch-2009"
+    depends_on:
+      - elasticsearch
+    restart: "no"
 
   # Archive extractor - 2010
-  #xcontest-arch-extractor-2010:
-  #  container_name: xcontest-arch-extractor-2010
-  #  image: fahy.xyz/xcontest-arch-extractor:v1
-  #  environment:
-  #    - ELASTICSEARCH_URL=http://elasticsearch:9200
-  #    - ELASTICSEARCH_USERNAME=elastic
-  #    - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
-  #    - LOG_LEVEL=debug
-  #    - PORT=9099
-  #    - URL=https://www.xcontest.org/2010/world/en/flights/#flights[start]=
-  #    - START_FLIGHT_NUMBER=7900
-  #    - LOAD_LAST_FLIGHT_NUMBER=true
-  #    - TIMEOUT_SECONDS=420
-  #    - NUMBER_OF_RETRIES=50
-  #    - RUN_INTERVAL_MINUTES=2
-  #  ports:
-  #    - 9099:9099
-  #  networks:
-  #    - monitoring
-  #  labels:
-  #    - "prometheus.io/scrape=true"
-  #    - "prometheus.io/port=9099"
-  #    - "prometheus.io/extra-labels=app:xcontest-arch-2010"
-  #  depends_on:
-  #    - elasticsearch
-  #  restart: "no"
+  xcontest-arch-extractor-2010:
+    container_name: xcontest-arch-extractor-2010
+    image: fahy.xyz/xcontest-arch-extractor:v1
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+      - LOG_LEVEL=debug
+      - PORT=9099
+      - URL=https://www.xcontest.org/2010/world/en/flights/#flights[start]=
+      - START_FLIGHT_NUMBER=7900
+      - LOAD_LAST_FLIGHT_NUMBER=true
+      - TIMEOUT_SECONDS=420
+      - NUMBER_OF_RETRIES=50
+      - RUN_INTERVAL_MINUTES=2
+    ports:
+      - 9099:9099
+    networks:
+      - monitoring
+    labels:
+      - "prometheus.io/scrape=true"
+      - "prometheus.io/port=9099"
+      - "prometheus.io/extra-labels=app:xcontest-arch-2010"
+    depends_on:
+      - elasticsearch
+    restart: "no"
 
   # Archive extractor - 2011
-  #xcontest-arch-extractor-2011:
-  #  container_name: xcontest-arch-extractor-2011
-  #  image: fahy.xyz/xcontest-arch-extractor:v1
-  #  environment:
-  #    - ELASTICSEARCH_URL=http://elasticsearch:9200
-  #    - ELASTICSEARCH_USERNAME=elastic
-  #    - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
-  #    - LOG_LEVEL=debug
-  #    - PORT=9101
-  #    - URL=https://www.xcontest.org/2011/world/en/flights/#flights[start]=
-  #    - START_FLIGHT_NUMBER=32600
-  #    - LOAD_LAST_FLIGHT_NUMBER=true
-  #    - TIMEOUT_SECONDS=420
-  #    - NUMBER_OF_RETRIES=50
-  #    - RUN_INTERVAL_MINUTES=2
-  #  ports:
-  #    - 9101:9101
-  #  networks:
-  #    - monitoring
-  #  labels:
-  #    - "prometheus.io/scrape=true"
-  #    - "prometheus.io/port=9101"
-  #    - "prometheus.io/extra-labels=app:xcontest-arch-2011"
-  #  depends_on:
-  #    - elasticsearch
-  #  restart: "no"
+  xcontest-arch-extractor-2011:
+    container_name: xcontest-arch-extractor-2011
+    image: fahy.xyz/xcontest-arch-extractor:v1
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+      - LOG_LEVEL=debug
+      - PORT=9101
+      - URL=https://www.xcontest.org/2011/world/en/flights/#flights[start]=
+      - START_FLIGHT_NUMBER=32600
+      - LOAD_LAST_FLIGHT_NUMBER=true
+      - TIMEOUT_SECONDS=420
+      - NUMBER_OF_RETRIES=50
+      - RUN_INTERVAL_MINUTES=2
+    ports:
+      - 9101:9101
+    networks:
+      - monitoring
+    labels:
+      - "prometheus.io/scrape=true"
+      - "prometheus.io/port=9101"
+      - "prometheus.io/extra-labels=app:xcontest-arch-2011"
+    depends_on:
+      - elasticsearch
+    restart: "no"
 
   # Archive extractor - 2012
-  #xcontest-arch-extractor-2012:
-  #  container_name: xcontest-arch-extractor-2012
-  #  image: fahy.xyz/xcontest-arch-extractor:v1
-  #  environment:
-  #    - ELASTICSEARCH_URL=http://elasticsearch:9200
-  #    - ELASTICSEARCH_USERNAME=elastic
-  #    - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
-  #    - LOG_LEVEL=debug
-  #    - PORT=9102
-  #    - URL=https://www.xcontest.org/2012/world/en/flights/#flights[start]=
-  #    - START_FLIGHT_NUMBER=70800
-  #    - LOAD_LAST_FLIGHT_NUMBER=true
-  #    - TIMEOUT_SECONDS=420
-  #    - NUMBER_OF_RETRIES=50
-  #    - RUN_INTERVAL_MINUTES=2
-  #  ports:
-  #    - 9102:9102
-  #  networks:
-  #    - monitoring
-  #  labels:
-  #    - "prometheus.io/scrape=true"
-  #    - "prometheus.io/port=9102"
-  #    - "prometheus.io/extra-labels=app:xcontest-arch-2012"
-  #  depends_on:
-  #    - elasticsearch
-  #  restart: "no"
+  xcontest-arch-extractor-2012:
+    container_name: xcontest-arch-extractor-2012
+    image: fahy.xyz/xcontest-arch-extractor:v1
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+      - LOG_LEVEL=debug
+      - PORT=9102
+      - URL=https://www.xcontest.org/2012/world/en/flights/#flights[start]=
+      - START_FLIGHT_NUMBER=70800
+      - LOAD_LAST_FLIGHT_NUMBER=true
+      - TIMEOUT_SECONDS=420
+      - NUMBER_OF_RETRIES=50
+      - RUN_INTERVAL_MINUTES=2
+    ports:
+      - 9102:9102
+    networks:
+      - monitoring
+    labels:
+      - "prometheus.io/scrape=true"
+      - "prometheus.io/port=9102"
+      - "prometheus.io/extra-labels=app:xcontest-arch-2012"
+    depends_on:
+      - elasticsearch
+    restart: "no"
 
   # Archive extractor - 2013
-  #xcontest-arch-extractor-2013:
-  #  container_name: xcontest-arch-extractor-2013
-  #  image: fahy.xyz/xcontest-arch-extractor:v1
-  #  environment:
-  #    - ELASTICSEARCH_URL=http://elasticsearch:9200
-  #    - ELASTICSEARCH_USERNAME=elastic
-  #    - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
-  #    - LOG_LEVEL=debug
-  #    - PORT=9103
-  #    - URL=https://www.xcontest.org/2013/world/en/flights/#flights[start]=
-  #    - START_FLIGHT_NUMBER=55900
-  #    - LOAD_LAST_FLIGHT_NUMBER=true
-  #    - TIMEOUT_SECONDS=420
-  #    - NUMBER_OF_RETRIES=50
-  #    - RUN_INTERVAL_MINUTES=2
-  #  ports:
-  #    - 9103:9103
-  #  networks:
-  #    - monitoring
-  #  labels:
-  #    - "prometheus.io/scrape=true"
-  #    - "prometheus.io/port=9103"
-  #    - "prometheus.io/extra-labels=app:xcontest-arch-2013"
-  #  depends_on:
-  #    - elasticsearch
-  #  restart: "no"
+  xcontest-arch-extractor-2013:
+    container_name: xcontest-arch-extractor-2013
+    image: fahy.xyz/xcontest-arch-extractor:v1
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+      - LOG_LEVEL=debug
+      - PORT=9103
+      - URL=https://www.xcontest.org/2013/world/en/flights/#flights[start]=
+      - START_FLIGHT_NUMBER=55900
+      - LOAD_LAST_FLIGHT_NUMBER=true
+      - TIMEOUT_SECONDS=420
+      - NUMBER_OF_RETRIES=50
+      - RUN_INTERVAL_MINUTES=2
+    ports:
+      - 9103:9103
+    networks:
+      - monitoring
+    labels:
+      - "prometheus.io/scrape=true"
+      - "prometheus.io/port=9103"
+      - "prometheus.io/extra-labels=app:xcontest-arch-2013"
+    depends_on:
+      - elasticsearch
+    restart: "no"
 
   # Archive extractor - 2014
-  #xcontest-arch-extractor-2014:
-  #  container_name: xcontest-arch-extractor-2014
-  #  image: fahy.xyz/xcontest-arch-extractor:v1
-  #  environment:
-  #    - ELASTICSEARCH_URL=http://elasticsearch:9200
-  #    - ELASTICSEARCH_USERNAME=elastic
-  #    - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
-  #    - LOG_LEVEL=debug
-  #    - PORT=9104
-  #    - URL=https://www.xcontest.org/2014/world/en/flights/#flights[start]=
-  #    - START_FLIGHT_NUMBER=101500
-  #    - LOAD_LAST_FLIGHT_NUMBER=true
-  #    - TIMEOUT_SECONDS=420
-  #    - NUMBER_OF_RETRIES=50
-  #    - RUN_INTERVAL_MINUTES=2
-  #  ports:
-  #    - 9104:9104
-  #  networks:
-  #    - monitoring
-  #  labels:
-  #    - "prometheus.io/scrape=true"
-  #    - "prometheus.io/port=9104"
-  #    - "prometheus.io/extra-labels=app:xcontest-arch-2014"
-  #  depends_on:
-  #    - elasticsearch
-  #  restart: "no"
+  xcontest-arch-extractor-2014:
+    container_name: xcontest-arch-extractor-2014
+    image: fahy.xyz/xcontest-arch-extractor:v1
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+      - LOG_LEVEL=debug
+      - PORT=9104
+      - URL=https://www.xcontest.org/2014/world/en/flights/#flights[start]=
+      - START_FLIGHT_NUMBER=101500
+      - LOAD_LAST_FLIGHT_NUMBER=true
+      - TIMEOUT_SECONDS=420
+      - NUMBER_OF_RETRIES=50
+      - RUN_INTERVAL_MINUTES=2
+    ports:
+      - 9104:9104
+    networks:
+      - monitoring
+    labels:
+      - "prometheus.io/scrape=true"
+      - "prometheus.io/port=9104"
+      - "prometheus.io/extra-labels=app:xcontest-arch-2014"
+    depends_on:
+      - elasticsearch
+    restart: "no"
 
   # Archive extractor - 2015
-  #xcontest-arch-extractor-2015:
-  #  container_name: xcontest-arch-extractor-2015
-  #  image: fahy.xyz/xcontest-arch-extractor:v1
-  #  environment:
-  #    - ELASTICSEARCH_URL=http://elasticsearch:9200
-  #    - ELASTICSEARCH_USERNAME=elastic
-  #    - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
-  #    - LOG_LEVEL=debug
-  #    - PORT=9105
-  #    - URL=https://www.xcontest.org/2015/world/en/flights/#flights[start]=
-  #    - START_FLIGHT_NUMBER=102200
-  #    - LOAD_LAST_FLIGHT_NUMBER=true
-  #    - TIMEOUT_SECONDS=420
-  #    - NUMBER_OF_RETRIES=50
-  #    - RUN_INTERVAL_MINUTES=2
-  #  ports:
-  #    - 9105:9105
-  #  networks:
-  #    - monitoring
-  #  labels:
-  #    - "prometheus.io/scrape=true"
-  #    - "prometheus.io/port=9105"
-  #    - "prometheus.io/extra-labels=app:xcontest-arch-2015"
-  #  depends_on:
-  #    - elasticsearch
-  #  restart: "no"
+  xcontest-arch-extractor-2015:
+    container_name: xcontest-arch-extractor-2015
+    image: fahy.xyz/xcontest-arch-extractor:v1
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+      - LOG_LEVEL=debug
+      - PORT=9105
+      - URL=https://www.xcontest.org/2015/world/en/flights/#flights[start]=
+      - START_FLIGHT_NUMBER=102200
+      - LOAD_LAST_FLIGHT_NUMBER=true
+      - TIMEOUT_SECONDS=420
+      - NUMBER_OF_RETRIES=50
+      - RUN_INTERVAL_MINUTES=2
+    ports:
+      - 9105:9105
+    networks:
+      - monitoring
+    labels:
+      - "prometheus.io/scrape=true"
+      - "prometheus.io/port=9105"
+      - "prometheus.io/extra-labels=app:xcontest-arch-2015"
+    depends_on:
+      - elasticsearch
+    restart: "no"
 
   # Archive extractor - 2016
-  #xcontest-arch-extractor-2016:
-  #  container_name: xcontest-arch-extractor-2016
-  #  image: fahy.xyz/xcontest-arch-extractor:v1
-  #  environment:
-  #    - ELASTICSEARCH_URL=http://elasticsearch:9200
-  #    - ELASTICSEARCH_USERNAME=elastic
-  #    - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
-  #    - LOG_LEVEL=debug
-  #    - PORT=9106
-  #    - URL=https://www.xcontest.org/2016/world/en/flights/#flights[start]=
-  #    - START_FLIGHT_NUMBER=94700
-  #    - LOAD_LAST_FLIGHT_NUMBER=true
-  #    - TIMEOUT_SECONDS=420
-  #    - NUMBER_OF_RETRIES=50
-  #    - RUN_INTERVAL_MINUTES=2
-  #  ports:
-  #    - 9106:9106
-  #  networks:
-  #    - monitoring
-  #  labels:
-  #    - "prometheus.io/scrape=true"
-  #    - "prometheus.io/port=9106"
-  #    - "prometheus.io/extra-labels=app:xcontest-arch-2016"
-  #  depends_on:
-  #    - elasticsearch
-  #  restart: "no"
+  xcontest-arch-extractor-2016:
+    container_name: xcontest-arch-extractor-2016
+    image: fahy.xyz/xcontest-arch-extractor:v1
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+      - LOG_LEVEL=debug
+      - PORT=9106
+      - URL=https://www.xcontest.org/2016/world/en/flights/#flights[start]=
+      - START_FLIGHT_NUMBER=94700
+      - LOAD_LAST_FLIGHT_NUMBER=true
+      - TIMEOUT_SECONDS=420
+      - NUMBER_OF_RETRIES=50
+      - RUN_INTERVAL_MINUTES=2
+    ports:
+      - 9106:9106
+    networks:
+      - monitoring
+    labels:
+      - "prometheus.io/scrape=true"
+      - "prometheus.io/port=9106"
+      - "prometheus.io/extra-labels=app:xcontest-arch-2016"
+    depends_on:
+      - elasticsearch
+    restart: "no"
 
   # Archive extractor - 2017
-  #xcontest-arch-extractor-2017:
-  #  container_name: xcontest-arch-extractor-2017
-  #  image: fahy.xyz/xcontest-arch-extractor:v1
-  #  environment:
-  #    - ELASTICSEARCH_URL=http://elasticsearch:9200
-  #    - ELASTICSEARCH_USERNAME=elastic
-  #    - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
-  #    - LOG_LEVEL=debug
-  #    - PORT=9107
-  #    - URL=https://www.xcontest.org/2017/world/en/flights/#flights[start]=
-  #    - START_FLIGHT_NUMBER=96400
-  #    - LOAD_LAST_FLIGHT_NUMBER=true
-  #    - TIMEOUT_SECONDS=420
-  #    - NUMBER_OF_RETRIES=50
-  #    - RUN_INTERVAL_MINUTES=2
-  #  ports:
-  #    - 9107:9107
-  #  networks:
-  #    - monitoring
-  #  labels:
-  #    - "prometheus.io/scrape=true"
-  #    - "prometheus.io/port=9107"
-  #    - "prometheus.io/extra-labels=app:xcontest-arch-2017"
-  #  depends_on:
-  #    - elasticsearch
-  #  restart: "no"
+  xcontest-arch-extractor-2017:
+    container_name: xcontest-arch-extractor-2017
+    image: fahy.xyz/xcontest-arch-extractor:v1
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+      - LOG_LEVEL=debug
+      - PORT=9107
+      - URL=https://www.xcontest.org/2017/world/en/flights/#flights[start]=
+      - START_FLIGHT_NUMBER=96400
+      - LOAD_LAST_FLIGHT_NUMBER=true
+      - TIMEOUT_SECONDS=420
+      - NUMBER_OF_RETRIES=50
+      - RUN_INTERVAL_MINUTES=2
+    ports:
+      - 9107:9107
+    networks:
+      - monitoring
+    labels:
+      - "prometheus.io/scrape=true"
+      - "prometheus.io/port=9107"
+      - "prometheus.io/extra-labels=app:xcontest-arch-2017"
+    depends_on:
+      - elasticsearch
+    restart: "no"
 
   # Archive extractor - 2018
-  #xcontest-arch-extractor-2018:
-  #  container_name: xcontest-arch-extractor-2018
-  #  image: fahy.xyz/xcontest-arch-extractor:v1
-  #  environment:
-  #    - ELASTICSEARCH_URL=http://elasticsearch:9200
-  #    - ELASTICSEARCH_USERNAME=elastic
-  #    - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
-  #    - LOG_LEVEL=debug
-  #    - PORT=9108
-  #    - URL=https://www.xcontest.org/2018/world/en/flights/#flights[start]=
-  #    - START_FLIGHT_NUMBER=168000
-  #    - LOAD_LAST_FLIGHT_NUMBER=true
-  #    - TIMEOUT_SECONDS=420
-  #    - NUMBER_OF_RETRIES=50
-  #    - RUN_INTERVAL_MINUTES=2
-  #  ports:
-  #    - 9108:9108
-  #  networks:
-  #    - monitoring
-  #  labels:
-  #    - "prometheus.io/scrape=true"
-  #    - "prometheus.io/port=9108"
-  #    - "prometheus.io/extra-labels=app:xcontest-arch-2018"
-  #  depends_on:
-  #    - elasticsearch
-  #  restart: "no"
+  xcontest-arch-extractor-2018:
+    container_name: xcontest-arch-extractor-2018
+    image: fahy.xyz/xcontest-arch-extractor:v1
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+      - LOG_LEVEL=debug
+      - PORT=9108
+      - URL=https://www.xcontest.org/2018/world/en/flights/#flights[start]=
+      - START_FLIGHT_NUMBER=168000
+      - LOAD_LAST_FLIGHT_NUMBER=true
+      - TIMEOUT_SECONDS=420
+      - NUMBER_OF_RETRIES=50
+      - RUN_INTERVAL_MINUTES=2
+    ports:
+      - 9108:9108
+    networks:
+      - monitoring
+    labels:
+      - "prometheus.io/scrape=true"
+      - "prometheus.io/port=9108"
+      - "prometheus.io/extra-labels=app:xcontest-arch-2018"
+    depends_on:
+      - elasticsearch
+    restart: "no"
 
   # Archive extractor - 2019
-  #xcontest-arch-extractor-2019:
-  #  container_name: xcontest-arch-extractor-2019
-  #  image: fahy.xyz/xcontest-arch-extractor:v1
-  #  environment:
-  #    - ELASTICSEARCH_URL=http://elasticsearch:9200
-  #    - ELASTICSEARCH_USERNAME=elastic
-  #    - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
-  #    - LOG_LEVEL=debug
-  #    - PORT=9109
-  #    - URL=https://www.xcontest.org/2019/world/en/flights/#flights[start]=
-  #    - START_FLIGHT_NUMBER=93700
-  #    - LOAD_LAST_FLIGHT_NUMBER=true
-  #    - TIMEOUT_SECONDS=420
-  #    - NUMBER_OF_RETRIES=50
-  #    - RUN_INTERVAL_MINUTES=2
-  #  ports:
-  #    - 9109:9109
-  #  networks:
-  #    - monitoring
-  #  labels:
-  #    - "prometheus.io/scrape=true"
-  #    - "prometheus.io/port=9109"
-  #    - "prometheus.io/extra-labels=app:xcontest-arch-2019"
-  #  depends_on:
-  #    - elasticsearch
-  #  restart: "no"
+  xcontest-arch-extractor-2019:
+    container_name: xcontest-arch-extractor-2019
+    image: fahy.xyz/xcontest-arch-extractor:v1
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+      - LOG_LEVEL=debug
+      - PORT=9109
+      - URL=https://www.xcontest.org/2019/world/en/flights/#flights[start]=
+      - START_FLIGHT_NUMBER=93700
+      - LOAD_LAST_FLIGHT_NUMBER=true
+      - TIMEOUT_SECONDS=420
+      - NUMBER_OF_RETRIES=50
+      - RUN_INTERVAL_MINUTES=2
+    ports:
+      - 9109:9109
+    networks:
+      - monitoring
+    labels:
+      - "prometheus.io/scrape=true"
+      - "prometheus.io/port=9109"
+      - "prometheus.io/extra-labels=app:xcontest-arch-2019"
+    depends_on:
+      - elasticsearch
+    restart: "no"
 
   # Archive extractor - 2020
-  #xcontest-arch-extractor-2020:
-  #  container_name: xcontest-arch-extractor-2020
-  #  image: fahy.xyz/xcontest-arch-extractor:v1
-  #  environment:
-  #    - ELASTICSEARCH_URL=http://elasticsearch:9200
-  #    - ELASTICSEARCH_USERNAME=elastic
-  #    - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
-  #    - LOG_LEVEL=debug
-  #    - PORT=9110
-  #    - URL=https://www.xcontest.org/2020/world/en/flights/#flights[start]=
-  #    - START_FLIGHT_NUMBER=65500
-  #    - LOAD_LAST_FLIGHT_NUMBER=true
-  #    - TIMEOUT_SECONDS=420
-  #    - NUMBER_OF_RETRIES=50
-  #    - RUN_INTERVAL_MINUTES=2
-  #  ports:
-  #    - 9110:9110
-  #  networks:
-  #    - monitoring
-  #  labels:
-  #    - "prometheus.io/scrape=true"
-  #    - "prometheus.io/port=9110"
-  #    - "prometheus.io/extra-labels=app:xcontest-arch-2020"
-  #  depends_on:
-  #    - elasticsearch
-  #  restart: "no"
+  xcontest-arch-extractor-2020:
+    container_name: xcontest-arch-extractor-2020
+    image: fahy.xyz/xcontest-arch-extractor:v1
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+      - LOG_LEVEL=debug
+      - PORT=9110
+      - URL=https://www.xcontest.org/2020/world/en/flights/#flights[start]=
+      - START_FLIGHT_NUMBER=65500
+      - LOAD_LAST_FLIGHT_NUMBER=true
+      - TIMEOUT_SECONDS=420
+      - NUMBER_OF_RETRIES=50
+      - RUN_INTERVAL_MINUTES=2
+    ports:
+      - 9110:9110
+    networks:
+      - monitoring
+    labels:
+      - "prometheus.io/scrape=true"
+      - "prometheus.io/port=9110"
+      - "prometheus.io/extra-labels=app:xcontest-arch-2020"
+    depends_on:
+      - elasticsearch
+    restart: "no"
 
   # Archive extractor - 2021
-  #xcontest-arch-extractor-2021:
-  #  container_name: xcontest-arch-extractor-2021
-  #  image: fahy.xyz/xcontest-arch-extractor:v1
-  #  environment:
-  #    - ELASTICSEARCH_URL=http://elasticsearch:9200
-  #    - ELASTICSEARCH_USERNAME=elastic
-  #    - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
-  #    - LOG_LEVEL=debug
-  #    - PORT=9111
-  #    - URL=https://www.xcontest.org/2021/world/en/flights/#flights[start]=
-  #    - START_FLIGHT_NUMBER=100300
-  #    - LOAD_LAST_FLIGHT_NUMBER=true
-  #    - TIMEOUT_SECONDS=420
-  #    - NUMBER_OF_RETRIES=50
-  #    - RUN_INTERVAL_MINUTES=2
-  #  ports:
-  #    - 9111:9111
-  #  networks:
-  #    - monitoring
-  #  labels:
-  #    - "prometheus.io/scrape=true"
-  #    - "prometheus.io/port=9111"
-  #    - "prometheus.io/extra-labels=app:xcontest-arch-2021"
-  #  depends_on:
-  #    - elasticsearch
-  #  restart: "no"
+  xcontest-arch-extractor-2021:
+    container_name: xcontest-arch-extractor-2021
+    image: fahy.xyz/xcontest-arch-extractor:v1
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+      - LOG_LEVEL=debug
+      - PORT=9111
+      - URL=https://www.xcontest.org/2021/world/en/flights/#flights[start]=
+      - START_FLIGHT_NUMBER=100300
+      - LOAD_LAST_FLIGHT_NUMBER=true
+      - TIMEOUT_SECONDS=420
+      - NUMBER_OF_RETRIES=50
+      - RUN_INTERVAL_MINUTES=2
+    ports:
+      - 9111:9111
+    networks:
+      - monitoring
+    labels:
+      - "prometheus.io/scrape=true"
+      - "prometheus.io/port=9111"
+      - "prometheus.io/extra-labels=app:xcontest-arch-2021"
+    depends_on:
+      - elasticsearch
+    restart: "no"
 
   # Archive extractor - 2022
-  #xcontest-arch-extractor-2022:
-  #  container_name: xcontest-arch-extractor-2022
-  #  image: fahy.xyz/xcontest-arch-extractor:v1
-  #  environment:
-  #    - ELASTICSEARCH_URL=http://elasticsearch:9200
-  #    - ELASTICSEARCH_USERNAME=elastic
-  #    - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
-  #    - LOG_LEVEL=debug
-  #    - PORT=9112
-  #    - URL=https://www.xcontest.org/2022/world/en/flights/#flights[start]=
-  #    - START_FLIGHT_NUMBER=0
-  #    - TIMEOUT_SECONDS=420
-  #    - NUMBER_OF_RETRIES=50
-  #  ports:
-  #    - 9112:9112
-  #  networks:
-  #    - monitoring
-  #  labels:
-  #    - "prometheus.io/scrape=true"
-  #    - "prometheus.io/port=9112"
-  #    - "prometheus.io/extra-labels=app:xcontest-arch-2022"
-  #  depends_on:
-  #    - elasticsearch
-  #  restart: "no"
+  xcontest-arch-extractor-2022:
+    container_name: xcontest-arch-extractor-2022
+    image: fahy.xyz/xcontest-arch-extractor:v1
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+      - LOG_LEVEL=debug
+      - PORT=9112
+      - URL=https://www.xcontest.org/2022/world/en/flights/#flights[start]=
+      - START_FLIGHT_NUMBER=0
+      - TIMEOUT_SECONDS=420
+      - NUMBER_OF_RETRIES=50
+    ports:
+      - 9112:9112
+    networks:
+      - monitoring
+    labels:
+      - "prometheus.io/scrape=true"
+      - "prometheus.io/port=9112"
+      - "prometheus.io/extra-labels=app:xcontest-arch-2022"
+    depends_on:
+      - elasticsearch
+    restart: "no"
 
   # Weekly stats
   weekly-stats:

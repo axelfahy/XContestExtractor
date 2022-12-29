@@ -1,7 +1,7 @@
 package parser
 
 import (
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"testing"
 	"time"
@@ -14,7 +14,7 @@ func TestGetFlightInfo01(t *testing.T) {
 	httpmock.Activate()
 	defer httpmock.DeactivateAndReset()
 
-	content, err := ioutil.ReadFile(filepath.Join("testdata", "flight_detail_01.html"))
+	content, err := os.ReadFile(filepath.Join("testdata", "flight_detail_01.html"))
 	if err != nil {
 		t.Errorf("Error reading file: %v", err)
 	}
@@ -34,7 +34,7 @@ func TestGetFlightInfo02(t *testing.T) {
 	httpmock.Activate()
 	defer httpmock.DeactivateAndReset()
 
-	content, err := ioutil.ReadFile(filepath.Join("testdata", "flight_detail_02.html"))
+	content, err := os.ReadFile(filepath.Join("testdata", "flight_detail_02.html"))
 	if err != nil {
 		t.Errorf("Error reading file: %v", err)
 	}
@@ -54,7 +54,7 @@ func TestGetFlightInfo03(t *testing.T) {
 	httpmock.Activate()
 	defer httpmock.DeactivateAndReset()
 
-	content, err := ioutil.ReadFile(filepath.Join("testdata", "flight_detail_03.html"))
+	content, err := os.ReadFile(filepath.Join("testdata", "flight_detail_03.html"))
 	if err != nil {
 		t.Errorf("Error reading file: %v", err)
 	}

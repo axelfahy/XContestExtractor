@@ -5,15 +5,15 @@ import (
 	"context"
 	"crypto/md5"
 	"encoding/json"
-	"fahy.xyz/xcontestextractor/parser"
 	"fmt"
+	"io"
+	"strings"
+
+	"fahy.xyz/xcontestextractor/parser"
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/elastic/go-elasticsearch/v8/esutil"
 	"github.com/mottaquikarim/esquerydsl"
 	"github.com/sqooba/go-common/logging"
-	"io"
-	"io/ioutil"
-	"strings"
 )
 
 var (
@@ -112,7 +112,7 @@ func (manager *ElasticManager) FlightExists(fullName string, distance float64, d
 		}
 	}
 	// Read the content of the body before closing.
-	_, err = io.Copy(ioutil.Discard, res.Body)
+	_, err = io.Copy(io.Discard, res.Body)
 	if err != nil {
 		return false, err
 	}
@@ -153,7 +153,7 @@ func (manager *ElasticManager) GetLastFlightNumber(year int) (int, error) {
 		return flightNumber.Source.LastFlightNumber, nil
 	}
 	// Read the content of the body before closing.
-	if _, err = io.Copy(ioutil.Discard, res.Body); err != nil {
+	if _, err = io.Copy(io.Discard, res.Body); err != nil {
 		return 0, err
 	}
 	log.Warningf("Unable to get last flight number, set to 0.")
