@@ -128,6 +128,13 @@ func main() {
 		log.Fatalf("Error creating the ES client: %v", err)
 	}
 
+	client := &http.Client{
+		Transport: &http.Transport{
+			MaxIdleConnsPerHost: 20,
+		},
+		Timeout: 10 * time.Second,
+	}
+
 	// Coordination context, channels and signals
 	ctx, cancel := context.WithCancel(context.Background())
 
@@ -142,7 +149,7 @@ func main() {
 		metrics.RunsTotal.Inc()
 
 		// Read the RSS feed.
-		resp, err := http.Get(url)
+		resp, err := client.Get(url)
 		metrics.HttpRequestsTotal.Inc()
 		if err != nil {
 			metrics.ErrorsTotal.Inc()
