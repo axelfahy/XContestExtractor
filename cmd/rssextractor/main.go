@@ -127,12 +127,14 @@ func main() {
 		metrics.ErrorsTotal.Inc()
 		log.Fatalf("Error creating the ES client: %v", err)
 	}
+	transport := http.DefaultTransport.(*http.Transport).Clone()
+	transport.MaxIdleConns = 100
+	transport.MaxConnsPerHost = 100
+	transport.MaxIdleConnsPerHost = 100
 
 	client := &http.Client{
-		Transport: &http.Transport{
-			MaxIdleConnsPerHost: 20,
-		},
-		Timeout: 10 * time.Second,
+		Timeout:   10 * time.Second,
+		Transport: transport,
 	}
 
 	// Coordination context, channels and signals
